@@ -68,11 +68,11 @@ exports.sourceNodes = function sourceNodes(args, pluginOptions) {
                     entries = _a.sent();
                     entries.forEach(function (ent) {
                         var value = JSON.parse(ent.value || "{}");
-                        args.actions.createNode(__assign({ id: args.createNodeId("hon-" + ent.id), internal: {
+                        args.actions.createNode(__assign(__assign({ internal: {
                                 contentDigest: args.createContentDigest(value),
                                 type: "Hon" + ent.__model,
                                 content: JSON.stringify(value),
-                            } }, value));
+                            } }, value), { id: args.createNodeId("hon-" + ent.id) }));
                     });
                     return [4 /*yield*/, db_1.allAsync(db_1.db, "\nselect\n    t.id,\n    t.config,\n    t.path,\n    m.alias as model,\n    e.id as entryid,\n    e.value\nfrom\n    taxonomy t\n        inner join json_each(t.config, '$.models') mid\n        inner join model m on m.id = mid.value\n        inner join entry e on e.model_id = m.id or m.inherits like e.model_id\nwhere\n    t.type = 'dynamic';\n    ")];
                 case 2:
@@ -117,11 +117,11 @@ exports.sourceNodes = function sourceNodes(args, pluginOptions) {
                             model: ent.model,
                             path: path,
                         };
-                        args.actions.createNode(__assign({ id: args.createNodeId("hon-tax-" + value.entryId), internal: {
+                        args.actions.createNode(__assign(__assign({ internal: {
                                 contentDigest: args.createContentDigest(value),
                                 type: "HonTaxonomy",
                                 content: JSON.stringify(value),
-                            } }, value));
+                            } }, value), { id: args.createNodeId("hon-tax-" + value.entryId) }));
                     });
                     return [4 /*yield*/, db_1.allAsync(db_1.db, "\nselect\n    t.id,\n    t.path,\n    t.entry_id as entryid,\n    m.alias as model\nfrom\n    taxonomy t\n        inner join entry e on t.entry_id = e.id\n        inner join model m on m.id = e.model_id\nwhere\n    t.type = 'entry';\n    ")];
                 case 3:
@@ -135,11 +135,11 @@ exports.sourceNodes = function sourceNodes(args, pluginOptions) {
                                     .filter(function (_, idx) { return idx >= (taxonomySkip || 0); })
                                     .join("/"),
                         };
-                        args.actions.createNode(__assign({ id: args.createNodeId("hon-tax-" + ent.id), internal: {
+                        args.actions.createNode(__assign(__assign({ internal: {
                                 contentDigest: args.createContentDigest(value),
                                 type: "HonTaxonomy",
                                 content: JSON.stringify(value),
-                            } }, value));
+                            } }, value), { id: args.createNodeId("hon-tax-" + ent.id) }));
                     });
                     return [2 /*return*/];
             }

@@ -21,13 +21,13 @@ export const sourceNodes = async function sourceNodes(
   entries.forEach((ent) => {
     const value = JSON.parse(ent.value || "{}");
     args.actions.createNode({
-      id: args.createNodeId(`hon-${ent.id}`),
       internal: {
         contentDigest: args.createContentDigest(value),
         type: `Hon${ent.__model}`,
         content: JSON.stringify(value),
       },
       ...value,
+      id: args.createNodeId(`hon-${ent.id}`),
     });
   });
 
@@ -106,13 +106,13 @@ where
     };
 
     args.actions.createNode({
-      id: args.createNodeId(`hon-tax-${value.entryId}`),
       internal: {
         contentDigest: args.createContentDigest(value),
         type: "HonTaxonomy",
         content: JSON.stringify(value),
       },
       ...value,
+      id: args.createNodeId(`hon-tax-${value.entryId}`),
     });
   });
 
@@ -145,13 +145,13 @@ where
     };
 
     args.actions.createNode({
-      id: args.createNodeId(`hon-tax-${ent.id}`),
       internal: {
         contentDigest: args.createContentDigest(value),
         type: "HonTaxonomy",
         content: JSON.stringify(value),
       },
       ...value,
+      id: args.createNodeId(`hon-tax-${ent.id}`),
     });
   });
 };

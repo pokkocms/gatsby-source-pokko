@@ -49,7 +49,8 @@ if (!fs_1.default.existsSync(cachePath)) {
 }
 var dbFile = path_1.default.join(cachePath, "gatsby-source-honegumi.sqlite3");
 console.log("db path", dbFile);
-exports.db = new sqlite3_1.default.Database(dbFile);
+process.env.GSH_DB;
+exports.db = new sqlite3_1.default.Database(process.env.GSH_DB || ":memory:");
 var execAsync = function (db, sql) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (resolve, reject) {

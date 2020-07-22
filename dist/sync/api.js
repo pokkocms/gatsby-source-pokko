@@ -58,9 +58,7 @@ var loadPage = function (client, after, skip) { return __awaiter(void 0, void 0,
                 })];
             case 1:
                 res = _c.sent();
-                if (!(res.data.sync.pageInfo.hasNextPage &&
-                    skip + res.data.sync.nodes.length < res.data.sync.totalCount) // TEMPORARY
-                ) return [3 /*break*/, 3]; // TEMPORARY
+                if (!res.data.sync.pageInfo.hasNextPage) return [3 /*break*/, 3];
                 _b = (_a = res.data.sync.nodes).concat;
                 return [4 /*yield*/, loadPage(client, after, skip + res.data.sync.nodes.length)];
             case 2: return [2 /*return*/, _b.apply(_a, [_c.sent()])];

@@ -33,10 +33,7 @@ const loadPage = async (
     variables: { after, skip },
   });
 
-  if (
-    res.data.sync.pageInfo.hasNextPage &&
-    skip + res.data.sync.nodes.length < res.data.sync.totalCount // TEMPORARY
-  ) {
+  if (res.data.sync.pageInfo.hasNextPage) {
     return res.data.sync.nodes.concat(
       await loadPage(client, after, skip + res.data.sync.nodes.length)
     );

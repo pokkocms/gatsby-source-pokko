@@ -9,8 +9,8 @@ if (!fs.existsSync(cachePath)) {
 
 const dbFile = path.join(cachePath, "gatsby-source-honegumi.sqlite3");
 console.log("db path", dbFile);
-
-export const db = new sqlite3.Database(dbFile);
+process.env.GSH_DB;
+export const db = new sqlite3.Database(process.env.GSH_DB || ":memory:");
 
 const execAsync = async (db: sqlite3.Database, sql: string): Promise<void> =>
   new Promise((resolve, reject) => {
