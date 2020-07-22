@@ -1,11 +1,13 @@
 import sqlite3 from "sqlite3";
 import path from "path";
+import fs from "fs";
 
-const dbFile = path.join(
-  process.cwd(),
-  ".cache",
-  "gatsby-source-honegumi.sqlite3"
-);
+const cachePath = path.join(process.cwd(), ".cache");
+if (!fs.existsSync(cachePath)) {
+  fs.mkdirSync(cachePath);
+}
+
+const dbFile = path.join(cachePath, "gatsby-source-honegumi.sqlite3");
 
 export const db = new sqlite3.Database(dbFile);
 

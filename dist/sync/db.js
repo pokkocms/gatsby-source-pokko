@@ -42,7 +42,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.storeSync = exports.initDb = exports.getStamp = exports.getAsync = exports.allAsync = exports.db = void 0;
 var sqlite3_1 = __importDefault(require("sqlite3"));
 var path_1 = __importDefault(require("path"));
-var dbFile = path_1.default.join(process.cwd(), ".cache", "gatsby-source-honegumi.sqlite3");
+var fs_1 = __importDefault(require("fs"));
+var cachePath = path_1.default.join(process.cwd(), ".cache");
+if (!fs_1.default.existsSync(cachePath)) {
+    fs_1.default.mkdirSync(cachePath);
+}
+var dbFile = path_1.default.join(cachePath, "gatsby-source-honegumi.sqlite3");
 exports.db = new sqlite3_1.default.Database(dbFile);
 var execAsync = function (db, sql) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
