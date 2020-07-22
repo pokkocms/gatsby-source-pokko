@@ -44,7 +44,19 @@ export const createSchemaCustomization = async (
 
   args.actions.createTypes([
     args.schema.buildObjectType({
+      name: "HonTaxonomy",
+      extensions: { infer: false },
+      fields: {
+        id: "ID!",
+        entryId: "String",
+        model: "String",
+        path: "String",
+      },
+      interfaces: ["Node"],
+    }),
+    args.schema.buildObjectType({
       name: "HonMedia",
+      extensions: { infer: false },
       fields: {
         id: "ID!",
         url: {

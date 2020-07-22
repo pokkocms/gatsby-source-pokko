@@ -1,13 +1,13 @@
 import sqlite3 from "sqlite3";
 import path from "path";
-// import fs from "fs";
+import fs from "fs";
 
-// const cachePath = path.join(process.cwd(), ".cache");
-// if (!fs.existsSync(cachePath)) {
-//   fs.mkdirSync(cachePath);
-// }
+const cachePath = path.join(process.cwd(), ".cache");
+if (!fs.existsSync(cachePath)) {
+  fs.mkdirSync(cachePath, { recursive: true });
+}
 
-const dbFile = path.join(process.cwd(), "gatsby-source-honegumi.sqlite3");
+const dbFile = path.join(cachePath, "gatsby-source-honegumi.sqlite3");
 console.log("db path", dbFile);
 
 export const db = new sqlite3.Database(dbFile);
@@ -120,6 +120,20 @@ export const initDb = async (db: sqlite3.Database): Promise<void> => {
     primary key ( id )
   ) without rowid`
   );
+
+  await execAsync(
+    db,
+    `create table if not exists taxonomy (
+    id text not null,
+    alias text not null,
+    parent_id text,
+    config text,
+    path text not null,
+    type text not null,
+    entry_id text,
+    primary key ( id )
+  ) without rowid`
+  );
 };
 
 export const storeSync = async (
@@ -141,7 +155,7 @@ export const storeSync = async (
 
     await runAsync(
       db,
-      `insert into sync ( id, created_at, modified_at, deleted_at, type, action, payload ) values ( ?, ?, ?, ?, ?, ?, ?)`,
+      `replace into sync ( id, created_at, modified_at, deleted_at, type, action, payload ) values ( ?, ?, ?, ?, ?, ?, ?)`,
       params
     );
 
@@ -244,7 +258,37 @@ export const storeSync = async (
             break;
           case "delete":
             {
-              await runAsync(db, `delete from model_field where id = ?`, [
+              await runAsync(db, `delete from media_item where id = ?`, [
+                record.id,
+              ]);
+            }
+            break;
+        }
+        break;
+      case "taxonomy":
+        switch (record.action) {
+          case "create":
+          case "change":
+            {
+              const params: string[] = [
+                record.id,
+                record.payload.alias,
+                record.payload.parent_id,
+                JSON.stringify(record.payload.config),
+                JSON.stringify(record.payload.path),
+                record.payload.type,
+                record.payload.entry_id,
+              ];
+              await runAsync(
+                db,
+                `replace into taxonomy ( id, alias, parent_id, config, path, type, entry_id ) values ( ?, ?, ?, ?, ?, ?, ? )`,
+                params
+              );
+            }
+            break;
+          case "delete":
+            {
+              await runAsync(db, `delete from taxonomy where id = ?`, [
                 record.id,
               ]);
             }

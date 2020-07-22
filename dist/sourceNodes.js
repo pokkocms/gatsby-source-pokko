@@ -46,17 +46,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sourceNodes = void 0;
 var db_1 = require("./sync/db");
 exports.sourceNodes = function sourceNodes(args, pluginOptions) {
     return __awaiter(this, void 0, void 0, function () {
-        var project, token, entries;
+        var taxonomySkip, entries, taxDyn, taxEntry;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    project = pluginOptions.project, token = pluginOptions.token;
-                    console.log("honegumi project: " + project);
+                    taxonomySkip = pluginOptions.taxonomySkip;
                     return [4 /*yield*/, db_1.allAsync(db_1.db, "select e.*, m.alias as __model from entry e inner join model m on e.model_id = m.id")];
                 case 1:
                     entries = _a.sent();
@@ -65,6 +71,73 @@ exports.sourceNodes = function sourceNodes(args, pluginOptions) {
                         args.actions.createNode(__assign({ id: args.createNodeId("hon-" + ent.id), internal: {
                                 contentDigest: args.createContentDigest(value),
                                 type: "Hon" + ent.__model,
+                                content: JSON.stringify(value),
+                            } }, value));
+                    });
+                    return [4 /*yield*/, db_1.allAsync(db_1.db, "\nselect\n    t.id,\n    t.config,\n    t.path,\n    m.alias as model,\n    e.id as entryid,\n    e.value\nfrom\n    taxonomy t\n        inner join json_each(t.config, '$.models') mid\n        inner join model m on m.id = mid.value\n        inner join entry e on e.model_id = m.id or m.inherits like e.model_id\nwhere\n    t.type = 'dynamic';\n    ")];
+                case 2:
+                    taxDyn = _a.sent();
+                    taxDyn.forEach(function (ent) {
+                        var buildPath = function (input) {
+                            var ret = JSON.parse(input.path).filter(function (_, idx) { return idx >= (taxonomySkip || 0); });
+                            var config = JSON.parse(input.config);
+                            var value = JSON.parse(input.value);
+                            if (config.aliasField && config.fragmentType && config.fragmentField) {
+                                var alias = value[config.aliasField];
+                                if (config.fragmentType.startsWith("date")) {
+                                    var dt = new Date(value[config.fragmentField]);
+                                    switch (config.fragmentType) {
+                                        case "date_year":
+                                            return "/" + __spreadArrays(ret, [dt.getFullYear(), alias]).join("/");
+                                        case "date_yearmonth":
+                                            return ("/" +
+                                                __spreadArrays(ret, [dt.getFullYear(), dt.getMonth() + 1, alias]).join("/"));
+                                        case "date_yearmonthday":
+                                            return ("/" +
+                                                __spreadArrays(ret, [
+                                                    dt.getFullYear(),
+                                                    dt.getMonth() + 1,
+                                                    dt.getDate(),
+                                                    alias,
+                                                ]).join("/"));
+                                    }
+                                }
+                            }
+                            else if (config.aliasField) {
+                                return "/" + __spreadArrays(ret, [value[config.aliasField]]).join("/");
+                            }
+                            return null;
+                        };
+                        var path = buildPath(ent);
+                        if (!path) {
+                            return;
+                        }
+                        var value = {
+                            entryId: ent.entryid,
+                            model: ent.model,
+                            path: path,
+                        };
+                        args.actions.createNode(__assign({ id: args.createNodeId("hon-tax-" + value.entryId), internal: {
+                                contentDigest: args.createContentDigest(value),
+                                type: "HonTaxonomy",
+                                content: JSON.stringify(value),
+                            } }, value));
+                    });
+                    return [4 /*yield*/, db_1.allAsync(db_1.db, "\nselect\n    t.id,\n    t.path,\n    t.entry_id as entryid,\n    m.alias as model\nfrom\n    taxonomy t\n        inner join entry e on t.entry_id = e.id\n        inner join model m on m.id = e.model_id\nwhere\n    t.type = 'entry';\n    ")];
+                case 3:
+                    taxEntry = _a.sent();
+                    taxEntry.forEach(function (ent) {
+                        var value = {
+                            entryId: ent.entryid,
+                            model: ent.model,
+                            path: "/" +
+                                JSON.parse(ent.path)
+                                    .filter(function (_, idx) { return idx >= (taxonomySkip || 0); })
+                                    .join("/"),
+                        };
+                        args.actions.createNode(__assign({ id: args.createNodeId("hon-tax-" + ent.id), internal: {
+                                contentDigest: args.createContentDigest(value),
+                                type: "HonTaxonomy",
                                 content: JSON.stringify(value),
                             } }, value));
                     });

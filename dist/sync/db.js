@@ -42,12 +42,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.storeSync = exports.initDb = exports.getStamp = exports.getAsync = exports.allAsync = exports.db = void 0;
 var sqlite3_1 = __importDefault(require("sqlite3"));
 var path_1 = __importDefault(require("path"));
-// import fs from "fs";
-// const cachePath = path.join(process.cwd(), ".cache");
-// if (!fs.existsSync(cachePath)) {
-//   fs.mkdirSync(cachePath);
-// }
-var dbFile = path_1.default.join(process.cwd(), "gatsby-source-honegumi.sqlite3");
+var fs_1 = __importDefault(require("fs"));
+var cachePath = path_1.default.join(process.cwd(), ".cache");
+if (!fs_1.default.existsSync(cachePath)) {
+    fs_1.default.mkdirSync(cachePath, { recursive: true });
+}
+var dbFile = path_1.default.join(cachePath, "gatsby-source-honegumi.sqlite3");
 console.log("db path", dbFile);
 exports.db = new sqlite3_1.default.Database(dbFile);
 var execAsync = function (db, sql) { return __awaiter(void 0, void 0, void 0, function () {
@@ -115,19 +115,22 @@ exports.initDb = function (db) { return __awaiter(void 0, void 0, void 0, functi
                 return [4 /*yield*/, execAsync(db, "create table if not exists media_item (\n    id text not null,\n    content_type text not null,\n    storage text not null,\n    size text not null,\n    primary key ( id )\n  ) without rowid")];
             case 5:
                 _a.sent();
+                return [4 /*yield*/, execAsync(db, "create table if not exists taxonomy (\n    id text not null,\n    alias text not null,\n    parent_id text,\n    config text,\n    path text not null,\n    type text not null,\n    entry_id text,\n    primary key ( id )\n  ) without rowid")];
+            case 6:
+                _a.sent();
                 return [2 /*return*/];
         }
     });
 }); };
 exports.storeSync = function (db, data) { return __awaiter(void 0, void 0, void 0, function () {
-    var _i, data_1, record, params, _a, _b, params_1, _c, params_2, _d, params_3, _e, params_4;
-    return __generator(this, function (_f) {
-        switch (_f.label) {
+    var _i, data_1, record, params, _a, _b, params_1, _c, params_2, _d, params_3, _e, params_4, _f, params_5;
+    return __generator(this, function (_g) {
+        switch (_g.label) {
             case 0:
                 _i = 0, data_1 = data;
-                _f.label = 1;
+                _g.label = 1;
             case 1:
-                if (!(_i < data_1.length)) return [3 /*break*/, 28];
+                if (!(_i < data_1.length)) return [3 /*break*/, 34];
                 record = data_1[_i];
                 params = [
                     record.id,
@@ -140,17 +143,18 @@ exports.storeSync = function (db, data) { return __awaiter(void 0, void 0, void 
                     record.action,
                     JSON.stringify(record.payload),
                 ];
-                return [4 /*yield*/, runAsync(db, "insert into sync ( id, created_at, modified_at, deleted_at, type, action, payload ) values ( ?, ?, ?, ?, ?, ?, ?)", params)];
+                return [4 /*yield*/, runAsync(db, "replace into sync ( id, created_at, modified_at, deleted_at, type, action, payload ) values ( ?, ?, ?, ?, ?, ?, ?)", params)];
             case 2:
-                _f.sent();
+                _g.sent();
                 _a = record.type;
                 switch (_a) {
                     case "entry": return [3 /*break*/, 3];
                     case "model": return [3 /*break*/, 9];
                     case "model_field": return [3 /*break*/, 15];
                     case "media_item": return [3 /*break*/, 21];
+                    case "taxonomy": return [3 /*break*/, 27];
                 }
-                return [3 /*break*/, 27];
+                return [3 /*break*/, 33];
             case 3:
                 _b = record.action;
                 switch (_b) {
@@ -167,13 +171,13 @@ exports.storeSync = function (db, data) { return __awaiter(void 0, void 0, void 
                 ];
                 return [4 /*yield*/, runAsync(db, "replace into entry ( id, model_id, value ) values ( ?, ?, ? )", params_1)];
             case 5:
-                _f.sent();
+                _g.sent();
                 return [3 /*break*/, 8];
             case 6: return [4 /*yield*/, runAsync(db, "delete from entry where id = ?", [record.id])];
             case 7:
-                _f.sent();
+                _g.sent();
                 return [3 /*break*/, 8];
-            case 8: return [3 /*break*/, 27];
+            case 8: return [3 /*break*/, 33];
             case 9:
                 _c = record.action;
                 switch (_c) {
@@ -192,13 +196,13 @@ exports.storeSync = function (db, data) { return __awaiter(void 0, void 0, void 
                 ];
                 return [4 /*yield*/, runAsync(db, "replace into model ( id, alias, value_base, inherits, usage ) values ( ?, ?, ?, ?, ? )", params_2)];
             case 11:
-                _f.sent();
+                _g.sent();
                 return [3 /*break*/, 14];
             case 12: return [4 /*yield*/, runAsync(db, "delete from model where id = ?", [record.id])];
             case 13:
-                _f.sent();
+                _g.sent();
                 return [3 /*break*/, 14];
-            case 14: return [3 /*break*/, 27];
+            case 14: return [3 /*break*/, 33];
             case 15:
                 _d = record.action;
                 switch (_d) {
@@ -217,15 +221,15 @@ exports.storeSync = function (db, data) { return __awaiter(void 0, void 0, void 
                 ];
                 return [4 /*yield*/, runAsync(db, "replace into model_field ( id, model_id, alias, type, config ) values ( ?, ?, ?, ?, ? )", params_3)];
             case 17:
-                _f.sent();
+                _g.sent();
                 return [3 /*break*/, 20];
             case 18: return [4 /*yield*/, runAsync(db, "delete from model_field where id = ?", [
                     record.id,
                 ])];
             case 19:
-                _f.sent();
+                _g.sent();
                 return [3 /*break*/, 20];
-            case 20: return [3 /*break*/, 27];
+            case 20: return [3 /*break*/, 33];
             case 21:
                 _e = record.action;
                 switch (_e) {
@@ -243,19 +247,48 @@ exports.storeSync = function (db, data) { return __awaiter(void 0, void 0, void 
                 ];
                 return [4 /*yield*/, runAsync(db, "replace into media_item ( id, content_type, storage, size ) values ( ?, ?, ?, ? )", params_4)];
             case 23:
-                _f.sent();
+                _g.sent();
                 return [3 /*break*/, 26];
-            case 24: return [4 /*yield*/, runAsync(db, "delete from model_field where id = ?", [
+            case 24: return [4 /*yield*/, runAsync(db, "delete from media_item where id = ?", [
                     record.id,
                 ])];
             case 25:
-                _f.sent();
+                _g.sent();
                 return [3 /*break*/, 26];
-            case 26: return [3 /*break*/, 27];
+            case 26: return [3 /*break*/, 33];
             case 27:
+                _f = record.action;
+                switch (_f) {
+                    case "create": return [3 /*break*/, 28];
+                    case "change": return [3 /*break*/, 28];
+                    case "delete": return [3 /*break*/, 30];
+                }
+                return [3 /*break*/, 32];
+            case 28:
+                params_5 = [
+                    record.id,
+                    record.payload.alias,
+                    record.payload.parent_id,
+                    JSON.stringify(record.payload.config),
+                    JSON.stringify(record.payload.path),
+                    record.payload.type,
+                    record.payload.entry_id,
+                ];
+                return [4 /*yield*/, runAsync(db, "replace into taxonomy ( id, alias, parent_id, config, path, type, entry_id ) values ( ?, ?, ?, ?, ?, ?, ? )", params_5)];
+            case 29:
+                _g.sent();
+                return [3 /*break*/, 32];
+            case 30: return [4 /*yield*/, runAsync(db, "delete from taxonomy where id = ?", [
+                    record.id,
+                ])];
+            case 31:
+                _g.sent();
+                return [3 /*break*/, 32];
+            case 32: return [3 /*break*/, 33];
+            case 33:
                 _i++;
                 return [3 /*break*/, 1];
-            case 28: return [2 /*return*/];
+            case 34: return [2 /*return*/];
         }
     });
 }); };
