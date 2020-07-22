@@ -113,7 +113,7 @@ exports.sourceNodes = function sourceNodes(args, pluginOptions) {
                             return;
                         }
                         var value = {
-                            entryId: ent.entryid,
+                            entryId: args.createNodeId("hon-" + ent.entryid),
                             model: ent.model,
                             path: path,
                         };
@@ -128,7 +128,7 @@ exports.sourceNodes = function sourceNodes(args, pluginOptions) {
                     taxEntry = _a.sent();
                     taxEntry.forEach(function (ent) {
                         var value = {
-                            entryId: ent.entryid,
+                            entryId: args.createNodeId("hon-" + ent.entryid),
                             model: ent.model,
                             path: "/" +
                                 JSON.parse(ent.path)

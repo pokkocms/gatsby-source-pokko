@@ -100,7 +100,7 @@ where
     }
 
     const value = {
-      entryId: ent.entryid,
+      entryId: args.createNodeId(`hon-${ent.entryid}`),
       model: ent.model,
       path,
     };
@@ -135,7 +135,7 @@ where
 
   taxEntry.forEach((ent) => {
     const value = {
-      entryId: ent.entryid,
+      entryId: args.createNodeId(`hon-${ent.entryid}`),
       model: ent.model,
       path:
         "/" +

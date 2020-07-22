@@ -2,14 +2,6 @@ import sqlite3 from "sqlite3";
 import path from "path";
 import fs from "fs";
 
-const cachePath = path.join(process.cwd(), ".cache");
-if (!fs.existsSync(cachePath)) {
-  fs.mkdirSync(cachePath, { recursive: true });
-}
-
-const dbFile = path.join(cachePath, "gatsby-source-honegumi.sqlite3");
-console.log("db path", dbFile);
-process.env.GSH_DB;
 export const db = new sqlite3.Database(process.env.GSH_DB || ":memory:");
 
 const execAsync = async (db: sqlite3.Database, sql: string): Promise<void> =>
