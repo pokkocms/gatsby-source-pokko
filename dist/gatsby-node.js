@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.onPreInit = void 0;
+var sourceNodes_1 = require("./sourceNodes");
+Object.defineProperty(exports, "sourceNodes", { enumerable: true, get: function () { return sourceNodes_1.sourceNodes; } });
+var createSchemaCustomization_1 = require("./createSchemaCustomization");
+Object.defineProperty(exports, "createSchemaCustomization", { enumerable: true, get: function () { return createSchemaCustomization_1.createSchemaCustomization; } });
+var onCreateNode_1 = require("./onCreateNode");
+Object.defineProperty(exports, "onCreateNode", { enumerable: true, get: function () { return onCreateNode_1.onCreateNode; } });
+exports.onPreInit = function () { return console.log("loaded gatsby-source-honegumi"); };
