@@ -51,10 +51,7 @@ exports.createSchemaCustomization = void 0;
 var db_1 = require("./sync/db");
 var schema_1 = require("./sync/schema");
 var api_1 = require("./sync/api");
-var gatsby_source_filesystem_1 = require("gatsby-source-filesystem");
-var resolveValue = function (field, source) {
-    return source[field.id];
-};
+var types_1 = require("./types");
 var extractFieldType = function (field) {
     switch (field.type) {
         case "modules":
@@ -71,7 +68,7 @@ var extractFieldType = function (field) {
 var extractField = function (fld) {
     return {
         type: extractFieldType(fld),
-        resolve: function (source) { return resolveValue(fld, source); },
+        resolve: function (source) { return source[fld.id]; },
     };
 };
 exports.createSchemaCustomization = function (args, pluginOptions) { return __awaiter(void 0, void 0, void 0, function () {
@@ -86,89 +83,7 @@ exports.createSchemaCustomization = function (args, pluginOptions) { return __aw
                 return [4 /*yield*/, schema_1.listModels(db_1.db)];
             case 2:
                 models = _a.sent();
-                args.actions.createTypes([
-                    args.schema.buildObjectType({
-                        name: "HonTaxonomy",
-                        extensions: { infer: false },
-                        fields: {
-                            id: "ID!",
-                            entryId: "String",
-                            model: "String",
-                            path: "String",
-                        },
-                        interfaces: ["Node"],
-                    }),
-                    args.schema.buildObjectType({
-                        name: "HonMedia",
-                        extensions: { infer: false },
-                        fields: {
-                            id: "ID!",
-                            url: {
-                                type: "String",
-                                resolve: function (source) { return __awaiter(void 0, void 0, void 0, function () {
-                                    var item, storage;
-                                    return __generator(this, function (_a) {
-                                        switch (_a.label) {
-                                            case 0: return [4 /*yield*/, db_1.getAsync(db_1.db, "select * from media_item where id = ?", [source.id])];
-                                            case 1:
-                                                item = _a.sent();
-                                                if (!item) {
-                                                    return [2 /*return*/, null];
-                                                }
-                                                storage = JSON.parse(item.storage);
-                                                return [2 /*return*/, storage.public + "/" + storage.path];
-                                        }
-                                    });
-                                }); },
-                            },
-                            file: {
-                                type: "File",
-                                resolve: function (source) { return __awaiter(void 0, void 0, void 0, function () {
-                                    var item, storage2, fileNode;
-                                    return __generator(this, function (_a) {
-                                        switch (_a.label) {
-                                            case 0: return [4 /*yield*/, db_1.getAsync(db_1.db, "select * from media_item where id = ?", [source.id])];
-                                            case 1:
-                                                item = _a.sent();
-                                                if (!item) {
-                                                    return [2 /*return*/, null];
-                                                }
-                                                storage2 = JSON.parse(item.storage);
-                                                return [4 /*yield*/, gatsby_source_filesystem_1.createRemoteFileNode({
-                                                        url: storage2.public + "/" + source.id,
-                                                        parentNodeId: source.id,
-                                                        cache: args.cache,
-                                                        createNode: args.actions.createNode,
-                                                        createNodeId: args.createNodeId,
-                                                        store: args.store,
-                                                        reporter: args.reporter,
-                                                    })];
-                                            case 2:
-                                                fileNode = _a.sent();
-                                                return [2 /*return*/, fileNode.id];
-                                        }
-                                    });
-                                }); },
-                            },
-                        },
-                    }),
-                    args.schema.buildInterfaceType({
-                        name: "HonEntry",
-                        fields: {
-                            id: "ID!",
-                        },
-                    }),
-                    args.schema.buildInterfaceType({
-                        name: "HonModule",
-                        fields: {
-                            id: "ID!",
-                        },
-                        resolveType: function (source) {
-                            var model = models.find(function (mod) { return mod.id === source.type; });
-                            return "Hon" + model.alias;
-                        },
-                    }),
-                ]);
+                args.actions.createTypes(types_1.buildTypes(args));
                 models
                     .filter(function (mod) { return mod.usage === "base"; })
                     .forEach(function (mod) {
@@ -190,7 +105,14 @@ exports.createSchemaCustomization = function (args, pluginOptions) { return __aw
                 });
                 listInterfaces = function (mod) {
                     var ret = ["Node"];
-                    ret.push(mod.usage === "entry" ? "HonEntry" : "HonModule");
+                    switch (mod.usage) {
+                        case "entry":
+                            ret.push("HonEntry");
+                            break;
+                        case "module":
+                            ret.push("HonModule");
+                            break;
+                    }
                     if (mod.inherits) {
                         var inherits = JSON.parse(mod.inherits);
                         inherits.forEach(function (id) {

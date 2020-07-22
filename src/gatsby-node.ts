@@ -1,5 +1,5 @@
-export { sourceNodes } from "./sourceNodes";
 export { createSchemaCustomization } from "./createSchemaCustomization";
-export { onCreateNode } from "./onCreateNode";
+export { sourceNodes } from "./sourceNodes";
+export { createPages } from "./createPages";
 
-export const onPreInit = () => console.log("loaded gatsby-source-honegumi");
+export const onPreInit = () => console.log("[honegumi] loaded");

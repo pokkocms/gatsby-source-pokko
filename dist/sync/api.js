@@ -77,7 +77,7 @@ exports.runSync = function (project, token) { return __awaiter(void 0, void 0, v
                 return [4 /*yield*/, db_1.getStamp(db_1.db)];
             case 2:
                 after = _a.sent();
-                console.log("gatsby-source-honegumi look for changes since", after);
+                console.log("[honegumi] looking for changes since", after);
                 return [4 /*yield*/, loadPage(client, after, 0)];
             case 3:
                 res = _a.sent();

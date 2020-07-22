@@ -1,8 +1,10 @@
 import sqlite3 from "sqlite3";
 import path from "path";
-import fs from "fs";
 
-export const db = new sqlite3.Database(process.env.GSH_DB || ":memory:");
+const dbPath = process.env.GSH_DB
+  ? path.join(process.cwd(), process.env.GSH_DB)
+  : null;
+export const db = new sqlite3.Database(dbPath || ":memory:");
 
 const execAsync = async (db: sqlite3.Database, sql: string): Promise<void> =>
   new Promise((resolve, reject) => {

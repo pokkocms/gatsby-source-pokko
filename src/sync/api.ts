@@ -47,7 +47,7 @@ export const runSync = async (project: string, token: string) => {
   const client = createClient(project, token);
 
   const after = await getStamp(db);
-  console.log("gatsby-source-honegumi look for changes since", after);
+  console.log("[honegumi] looking for changes since", after);
 
   const res = await loadPage(client, after, 0);
 

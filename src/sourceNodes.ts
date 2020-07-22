@@ -6,6 +6,8 @@ export type PluginOptions = {
   project: string;
   root: string[];
   taxonomySkip?: number;
+  defaultTaxonomy?: boolean;
+  resolveComponent?: (input: { model: string }) => string;
 };
 
 export const sourceNodes = async function sourceNodes(

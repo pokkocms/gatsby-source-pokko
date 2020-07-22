@@ -1,13 +1,9 @@
 import { CreateSchemaCustomizationArgs } from "gatsby";
 import { PluginOptions } from "./sourceNodes";
-import { db, getAsync } from "./sync/db";
+import { db } from "./sync/db";
 import { listModels } from "./sync/schema";
 import { runSync } from "./sync/api";
-import { createRemoteFileNode } from "gatsby-source-filesystem";
-
-const resolveValue = (field: any, source: any) => {
-  return source[field.id];
-};
+import { buildTypes } from "./types";
 
 const extractFieldType = (field: any) => {
   switch (field.type) {
@@ -28,7 +24,7 @@ const extractField = (
 ): { type: string; resolve: (source: any) => any } => {
   return {
     type: extractFieldType(fld),
-    resolve: (source: any) => resolveValue(fld, source),
+    resolve: (source: any) => source[fld.id],
   };
 };
 
@@ -42,86 +38,7 @@ export const createSchemaCustomization = async (
 
   const models = await listModels(db);
 
-  args.actions.createTypes([
-    args.schema.buildObjectType({
-      name: "HonTaxonomy",
-      extensions: { infer: false },
-      fields: {
-        id: "ID!",
-        entryId: "String",
-        model: "String",
-        path: "String",
-      },
-      interfaces: ["Node"],
-    }),
-    args.schema.buildObjectType({
-      name: "HonMedia",
-      extensions: { infer: false },
-      fields: {
-        id: "ID!",
-        url: {
-          type: "String",
-          resolve: async (source: any) => {
-            const item = await getAsync(
-              db,
-              `select * from media_item where id = ?`,
-              [source.id]
-            );
-            if (!item) {
-              return null;
-            }
-
-            const storage = JSON.parse(item.storage);
-
-            return storage.public + "/" + storage.path;
-          },
-        },
-        file: {
-          type: "File",
-          resolve: async (source: any) => {
-            const item = await getAsync(
-              db,
-              `select * from media_item where id = ?`,
-              [source.id]
-            );
-            if (!item) {
-              return null;
-            }
-
-            const storage2 = JSON.parse(item.storage);
-            const fileNode = await createRemoteFileNode({
-              url: storage2.public + "/" + source.id,
-              parentNodeId: source.id,
-              cache: args.cache,
-              createNode: args.actions.createNode,
-              createNodeId: args.createNodeId,
-              store: args.store,
-              reporter: args.reporter,
-            });
-
-            return fileNode.id;
-          },
-        },
-      },
-    }),
-    args.schema.buildInterfaceType({
-      name: "HonEntry",
-      fields: {
-        id: "ID!",
-      },
-    }),
-    args.schema.buildInterfaceType({
-      name: "HonModule",
-      fields: {
-        id: "ID!",
-      },
-      resolveType: (source) => {
-        const model = models.find((mod) => mod.id === source.type);
-
-        return `Hon${model.alias}`;
-      },
-    }),
-  ]);
+  args.actions.createTypes(buildTypes(args));
 
   models
     .filter((mod) => mod.usage === "base")
@@ -145,7 +62,14 @@ export const createSchemaCustomization = async (
   const listInterfaces = (mod: any): string[] => {
     const ret = ["Node"];
 
-    ret.push(mod.usage === "entry" ? "HonEntry" : "HonModule");
+    switch (mod.usage) {
+      case "entry":
+        ret.push("HonEntry");
+        break;
+      case "module":
+        ret.push("HonModule");
+        break;
+    }
 
     if (mod.inherits) {
       const inherits = JSON.parse(mod.inherits);
