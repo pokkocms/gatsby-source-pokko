@@ -42,11 +42,12 @@ export const HonMedia = (args: CreateSchemaCustomizationArgs) =>
             url: storage2.public + "/" + source.id,
             parentNodeId: source.id,
             cache: args.cache,
+            getCache: args.getCache,
             createNode: args.actions.createNode,
             createNodeId: args.createNodeId,
             store: args.store,
             reporter: args.reporter,
-          });
+          } as any);
 
           return fileNode;
         },
