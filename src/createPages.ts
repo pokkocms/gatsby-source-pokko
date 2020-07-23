@@ -40,9 +40,7 @@ export const createPages = async (
       createPage({
         path: node.path,
         component,
-        context: {
-          entryId: node.entryId,
-        },
+        context: node,
       });
     } catch (ex) {
       console.warn(

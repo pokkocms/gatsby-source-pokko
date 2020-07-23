@@ -58,9 +58,7 @@ exports.createPages = function (_a, options) {
                             createPage({
                                 path: node.path,
                                 component: component,
-                                context: {
-                                    entryId: node.entryId,
-                                },
+                                context: node,
                             });
                         }
                         catch (ex) {
