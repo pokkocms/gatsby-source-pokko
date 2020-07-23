@@ -68,7 +68,13 @@ var extractFieldType = function (field) {
 var extractField = function (fld) {
     return {
         type: extractFieldType(fld),
-        resolve: function (source) { return source[fld.id]; },
+        resolve: function (source) {
+            if (source.value) {
+                // from module
+                return source.value[fld.id];
+            }
+            return source[fld.id];
+        },
     };
 };
 exports.createSchemaCustomization = function (args, pluginOptions) { return __awaiter(void 0, void 0, void 0, function () {

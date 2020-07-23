@@ -24,7 +24,14 @@ const extractField = (
 ): { type: string; resolve: (source: any) => any } => {
   return {
     type: extractFieldType(fld),
-    resolve: (source: any) => source[fld.id],
+    resolve: (source: any) => {
+      if (source.value) {
+        // from module
+        return source.value[fld.id];
+      }
+
+      return source[fld.id];
+    },
   };
 };
 
