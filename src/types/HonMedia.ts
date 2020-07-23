@@ -48,7 +48,7 @@ export const HonMedia = (args: CreateSchemaCustomizationArgs) =>
             reporter: args.reporter,
           });
 
-          return fileNode.id;
+          return fileNode;
         },
       },
     },

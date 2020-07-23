@@ -87,7 +87,7 @@ exports.HonMedia = function (args) {
                                     })];
                             case 2:
                                 fileNode = _a.sent();
-                                return [2 /*return*/, fileNode.id];
+                                return [2 /*return*/, fileNode];
                         }
                     });
                 }); },
