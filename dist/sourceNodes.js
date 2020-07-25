@@ -127,13 +127,12 @@ exports.sourceNodes = function sourceNodes(args, pluginOptions) {
                 case 3:
                     taxEntry = _a.sent();
                     taxEntry.forEach(function (ent) {
+                        var pathAlias = JSON.parse(ent.path).filter(function (_, idx) { return idx >= (taxonomySkip || 0); });
+                        var path = "/" + pathAlias.join("/");
                         var value = {
                             entryId: args.createNodeId("hon-" + ent.entryid),
                             model: ent.model,
-                            path: "/" +
-                                JSON.parse(ent.path)
-                                    .filter(function (_, idx) { return idx >= (taxonomySkip || 0); })
-                                    .join("/"),
+                            path: path,
                         };
                         args.actions.createNode(__assign(__assign({ internal: {
                                 contentDigest: args.createContentDigest(value),

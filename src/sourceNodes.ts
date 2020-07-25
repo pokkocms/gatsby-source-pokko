@@ -136,14 +136,15 @@ where
   );
 
   taxEntry.forEach((ent) => {
+    const pathAlias = JSON.parse(ent.path).filter(
+      (_: any, idx: number) => idx >= (taxonomySkip || 0)
+    );
+    const path = "/" + pathAlias.join("/");
+
     const value = {
       entryId: args.createNodeId(`hon-${ent.entryid}`),
       model: ent.model,
-      path:
-        "/" +
-        JSON.parse(ent.path)
-          .filter((_: any, idx: number) => idx >= (taxonomySkip || 0))
-          .join("/"),
+      path,
     };
 
     args.actions.createNode({

@@ -58,7 +58,12 @@ exports.createPages = function (_a, options) {
                             createPage({
                                 path: node.path,
                                 component: component,
-                                context: node,
+                                context: {
+                                    id: node.id,
+                                    taxonomyPath: node.path,
+                                    model: node.model,
+                                    entryId: node.entryId,
+                                },
                             });
                         }
                         catch (ex) {

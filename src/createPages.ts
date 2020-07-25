@@ -40,7 +40,12 @@ export const createPages = async (
       createPage({
         path: node.path,
         component,
-        context: node,
+        context: {
+          id: node.id,
+          taxonomyPath: node.path,
+          model: node.model,
+          entryId: node.entryId,
+        },
       });
     } catch (ex) {
       console.warn(
