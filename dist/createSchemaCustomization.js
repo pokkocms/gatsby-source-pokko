@@ -51,7 +51,7 @@ exports.createSchemaCustomization = void 0;
 var db_1 = require("./sync/db");
 var schema_1 = require("./sync/schema");
 var api_1 = require("./sync/api");
-var types_1 = require("./types");
+var index_1 = require("./types/index");
 var extractFieldType = function (field) {
     switch (field.type) {
         case "modules":
@@ -86,10 +86,10 @@ exports.createSchemaCustomization = function (args, pluginOptions) { return __aw
                 return [4 /*yield*/, api_1.runSync(project, token)];
             case 1:
                 _a.sent();
-                return [4 /*yield*/, schema_1.listModels(db_1.db)];
+                return [4 /*yield*/, schema_1.listModels(db_1.getDb(project))];
             case 2:
                 models = _a.sent();
-                args.actions.createTypes(types_1.buildTypes(args));
+                args.actions.createTypes(index_1.buildTypes(project, args));
                 models
                     .filter(function (mod) { return mod.usage === "base"; })
                     .forEach(function (mod) {

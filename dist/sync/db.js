@@ -39,13 +39,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storeSync = exports.initDb = exports.getStamp = exports.getAsync = exports.allAsync = exports.db = void 0;
+exports.storeSync = exports.initDb = exports.getStamp = exports.getAsync = exports.allAsync = exports.getDb = void 0;
 var sqlite3_1 = __importDefault(require("sqlite3"));
 var path_1 = __importDefault(require("path"));
-var dbPath = process.env.GSH_DB
-    ? path_1.default.join(process.cwd(), process.env.GSH_DB)
-    : null;
-exports.db = new sqlite3_1.default.Database(dbPath || ":memory:");
+var dbMap = new Map();
+var dbPath = function (project) {
+    return process.env.GSH_DB
+        ? path_1.default.join(process.cwd(), process.env.GSH_DB + project)
+        : ":memory:";
+};
+exports.getDb = function (project) {
+    if (dbMap.has(project)) {
+        return dbMap.get(project);
+    }
+    else {
+        var db = new sqlite3_1.default.Database(dbPath(project));
+        dbMap.set(project, db);
+        return db;
+    }
+};
 var execAsync = function (db, sql) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (resolve, reject) {

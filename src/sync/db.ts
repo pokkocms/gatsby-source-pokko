@@ -1,10 +1,24 @@
 import sqlite3 from "sqlite3";
 import path from "path";
 
-const dbPath = process.env.GSH_DB
-  ? path.join(process.cwd(), process.env.GSH_DB)
-  : null;
-export const db = new sqlite3.Database(dbPath || ":memory:");
+const dbMap = new Map<string, sqlite3.Database>();
+
+const dbPath = (project: string): string =>
+  process.env.GSH_DB
+    ? path.join(process.cwd(), process.env.GSH_DB + project)
+    : ":memory:";
+
+export const getDb = (project: string): sqlite3.Database => {
+  if (dbMap.has(project)) {
+    return dbMap.get(project)!;
+  } else {
+    const db = new sqlite3.Database(dbPath(project));
+
+    dbMap.set(project, db);
+
+    return db;
+  }
+};
 
 const execAsync = async (db: sqlite3.Database, sql: string): Promise<void> =>
   new Promise((resolve, reject) => {

@@ -1,9 +1,14 @@
 import { CreateSchemaCustomizationArgs } from "gatsby";
 import { createRemoteFileNode } from "gatsby-source-filesystem";
-import { getAsync, db } from "../sync/db";
+import { getAsync, getDb } from "../sync/db";
 
-export const HonMedia = (args: CreateSchemaCustomizationArgs) =>
-  args.schema.buildObjectType({
+export const HonMedia = (
+  project: string,
+  args: CreateSchemaCustomizationArgs
+) => {
+  const db = getDb(project);
+
+  return args.schema.buildObjectType({
     name: "HonMedia",
     extensions: { infer: false },
     fields: {
@@ -54,3 +59,4 @@ export const HonMedia = (args: CreateSchemaCustomizationArgs) =>
       },
     },
   });
+};

@@ -1,9 +1,14 @@
 import { CreateSchemaCustomizationArgs } from "gatsby";
 import { listModels } from "../sync/schema";
-import { db } from "../sync/db";
+import { getDb } from "../sync/db";
 
-export const HonModule = (args: CreateSchemaCustomizationArgs) =>
-  args.schema.buildInterfaceType({
+export const HonModule = (
+  project: string,
+  args: CreateSchemaCustomizationArgs
+) => {
+  const db = getDb(project);
+
+  return args.schema.buildInterfaceType({
     name: "HonModule",
     fields: {
       id: "ID!",
@@ -16,3 +21,4 @@ export const HonModule = (args: CreateSchemaCustomizationArgs) =>
       return `Hon${model.alias}`;
     },
   });
+};

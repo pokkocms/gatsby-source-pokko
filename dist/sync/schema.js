@@ -10,25 +10,6 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -66,32 +47,35 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.dbToSchema = exports.listModels = void 0;
-var graphql = __importStar(require("graphql"));
-var change_case_1 = require("change-case");
+exports.listModels = void 0;
+// import { camelCase } from "change-case";
 var db_1 = require("./db");
-var modelToField = function (model, fields) {
-    var flds = fields.filter(function (fld) { return fld.model_id === model.id; });
-    if (flds.length === 0) {
-        return null;
-    }
-    return {
-        name: change_case_1.camelCase(model.alias),
-        resolve: function () { },
-        type: new graphql.GraphQLObjectType({
-            name: model.alias,
-            fields: flds
-                .map(function (fld) { return ({
-                name: fld.alias,
-                type: graphql.GraphQLString,
-            }); })
-                .reduce(function (p, c) {
-                var _a;
-                return (__assign(__assign({}, p), (_a = {}, _a[c.name] = { type: c.type }, _a)));
-            }, {}),
-        }),
-    };
-};
+// const modelToField = (
+//   model: any,
+//   fields: any[]
+// ): {
+//   name: string;
+//   type: graphql.GraphQLObjectType;
+//   resolve: graphql.GraphQLFieldResolver<any, any>;
+// } | null => {
+//   const flds = fields.filter((fld) => fld.model_id === model.id);
+//   if (flds.length === 0) {
+//     return null;
+//   }
+//   return {
+//     name: camelCase(model.alias),
+//     resolve: () => {},
+//     type: new graphql.GraphQLObjectType({
+//       name: model.alias,
+//       fields: flds
+//         .map((fld) => ({
+//           name: fld.alias,
+//           type: graphql.GraphQLString,
+//         }))
+//         .reduce((p, c) => ({ ...p, [c.name]: { type: c.type } }), {}),
+//     }),
+//   };
+// };
 exports.listModels = function (db) { return __awaiter(void 0, void 0, void 0, function () {
     var models, fields;
     return __generator(this, function (_a) {
@@ -109,60 +93,43 @@ exports.listModels = function (db) { return __awaiter(void 0, void 0, void 0, fu
         }
     });
 }); };
-exports.dbToSchema = function (db) { return __awaiter(void 0, void 0, void 0, function () {
-    var models, fields, types, query, schema;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, db_1.allAsync(db, "select * from model")];
-            case 1:
-                models = _a.sent();
-                return [4 /*yield*/, db_1.allAsync(db, "select * from model_field")];
-            case 2:
-                fields = _a.sent();
-                types = models.map(function (model) { return ({
-                    model: model,
-                    type: modelToField(model, fields),
-                }); });
-                query = new graphql.GraphQLObjectType({
-                    name: "Hon_Query",
-                    fields: {
-                        honegumi: {
-                            type: new graphql.GraphQLObjectType({
-                                name: "Hon_Query2",
-                                fields: types
-                                    .filter(function (_a) {
-                                    var type = _a.type;
-                                    return type !== null;
-                                })
-                                    .filter(function (_a) {
-                                    var model = _a.model;
-                                    return model.usage === "entry";
-                                })
-                                    .reduce(function (p, _a) {
-                                    var _b;
-                                    var type = _a.type;
-                                    return (__assign(__assign({}, p), (_b = {}, _b[type.name] = {
-                                        type: type.type,
-                                        resolve: type.resolve,
-                                    }, _b)));
-                                }, {}),
-                            }),
-                        },
-                    },
-                });
-                schema = new graphql.GraphQLSchema({
-                    query: query,
-                    types: types
-                        .filter(function (_a) {
-                        var type = _a.type;
-                        return type !== null;
-                    })
-                        .map(function (_a) {
-                        var type = _a.type;
-                        return type.type;
-                    }),
-                });
-                return [2 /*return*/, schema];
-        }
-    });
-}); };
+// export const dbToSchema = async (
+//   db: sqlite3.Database
+// ): Promise<graphql.GraphQLSchema> => {
+//   const models = await allAsync(db, `select * from model`);
+//   const fields = await allAsync(db, `select * from model_field`);
+//   const types = models.map((model) => ({
+//     model,
+//     type: modelToField(model, fields),
+//   }));
+//   const query = new graphql.GraphQLObjectType({
+//     name: "Hon_Query",
+//     fields: {
+//       honegumi: {
+//         type: new graphql.GraphQLObjectType({
+//           name: "Hon_Query2",
+//           fields: types
+//             .filter(({ type }) => type !== null)
+//             .filter(({ model }) => model.usage === "entry")
+//             .reduce(
+//               (p, { type }) => ({
+//                 ...p,
+//                 [type!.name]: {
+//                   type: type!.type,
+//                   resolve: type!.resolve,
+//                 },
+//               }),
+//               {}
+//             ),
+//         }),
+//       },
+//     },
+//   });
+//   const schema = new graphql.GraphQLSchema({
+//     query,
+//     types: types
+//       .filter(({ type }) => type !== null)
+//       .map(({ type }) => type!.type) as graphql.GraphQLNamedType[],
+//   });
+//   return schema;
+// };

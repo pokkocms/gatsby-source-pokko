@@ -15,7 +15,6 @@
   "author": "Brendan <brendan@takeoffgo.com>",
   "license": "MIT",
   "dependencies": {
-    "@graphql-tools/wrap": "^6.0.14",
     "@types/node-fetch": "^2.5.7",
     "apollo-cache-inmemory": "^1.6.6",
     "apollo-client": "^2.6.10",
@@ -25,9 +24,7 @@
     "change-case": "^4.1.1",
     "gatsby": "^2.23.22",
     "gatsby-source-filesystem": "^2.3.19",
-    "graphql": "^14.7.0",
-    "graphql-tag": "^2.10.3",
-    "graphql-tools": "^6.0.14",
+    "graphql-tag": "^2.10.4",
     "node-fetch": "^2.6.0",
     "sqlite3": "^5.0.0",
     "uuid": "^8.2.0"

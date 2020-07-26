@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HonTaxonomy = void 0;
-exports.HonTaxonomy = function (args) {
+exports.HonTaxonomy = function (_project, args) {
     return args.schema.buildObjectType({
         name: "HonTaxonomy",
         extensions: { infer: false },

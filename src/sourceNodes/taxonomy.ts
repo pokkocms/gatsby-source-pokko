@@ -1,37 +1,13 @@
 import { SourceNodesArgs } from "gatsby";
-import { allAsync, db } from "./sync/db";
+import { allAsync, getDb } from "../sync/db";
+import { PluginOptions } from "../types";
 
-export type PluginOptions = {
-  token: string;
-  project: string;
-  root: string[];
-  taxonomySkip?: number;
-  defaultTaxonomy?: boolean;
-  resolveComponent?: (input: { model: string }) => string;
-};
-
-export const sourceNodes = async function sourceNodes(
+export const taxonomyDynamic = async (
   args: SourceNodesArgs,
   pluginOptions: PluginOptions
-) {
-  const { taxonomySkip } = pluginOptions;
-
-  const entries = await allAsync(
-    db,
-    "select e.*, m.alias as __model from entry e inner join model m on e.model_id = m.id"
-  );
-  entries.forEach((ent) => {
-    const value = JSON.parse(ent.value || "{}");
-    args.actions.createNode({
-      internal: {
-        contentDigest: args.createContentDigest(value),
-        type: `Hon${ent.__model}`,
-        content: JSON.stringify(value),
-      },
-      ...value,
-      id: args.createNodeId(`hon-${ent.id}`),
-    });
-  });
+) => {
+  const db = getDb(pluginOptions.project);
+  const { taxonomy } = pluginOptions;
 
   const taxDyn = await allAsync(
     db,
@@ -56,7 +32,7 @@ where
   taxDyn.forEach((ent) => {
     const buildPath = (input: any): string | null => {
       const ret: string[] = JSON.parse(input.path).filter(
-        (_: any, idx: number) => idx >= (taxonomySkip || 0)
+        (_: any, idx: number) => idx >= (taxonomy?.skip || 0)
       );
       const config = JSON.parse(input.config);
       const value = JSON.parse(input.value);
@@ -117,6 +93,14 @@ where
       id: args.createNodeId(`hon-tax-${value.entryId}`),
     });
   });
+};
+
+export const taxonomyStatic = async (
+  args: SourceNodesArgs,
+  pluginOptions: PluginOptions
+) => {
+  const db = getDb(pluginOptions.project);
+  const { taxonomy } = pluginOptions;
 
   const taxEntry = await allAsync(
     db,
@@ -137,7 +121,7 @@ where
 
   taxEntry.forEach((ent) => {
     const pathAlias = JSON.parse(ent.path).filter(
-      (_: any, idx: number) => idx >= (taxonomySkip || 0)
+      (_: any, idx: number) => idx >= (taxonomy?.skip || 0)
     );
     const path = "/" + pathAlias.join("/");
 

@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,12 +47,26 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onCreateNode = void 0;
-exports.onCreateNode = function (_a) {
-    var createNode = _a.actions.createNode, getCache = _a.getCache, createNodeId = _a.createNodeId, node = _a.node;
-    return __awaiter(void 0, void 0, void 0, function () {
-        return __generator(this, function (_b) {
-            return [2 /*return*/];
-        });
+exports.entries = void 0;
+var db_1 = require("../sync/db");
+exports.entries = function (args, pluginOptions) { return __awaiter(void 0, void 0, void 0, function () {
+    var db, entries;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                db = db_1.getDb(pluginOptions.project);
+                return [4 /*yield*/, db_1.allAsync(db, "select e.*, m.alias as __model from entry e inner join model m on e.model_id = m.id")];
+            case 1:
+                entries = _a.sent();
+                entries.forEach(function (ent) {
+                    var value = JSON.parse(ent.value || "{}");
+                    args.actions.createNode(__assign(__assign({ internal: {
+                            contentDigest: args.createContentDigest(value),
+                            type: "Hon" + ent.__model,
+                            content: JSON.stringify(value),
+                        } }, value), { id: args.createNodeId("hon-" + ent.id) }));
+                });
+                return [2 /*return*/];
+        }
     });
-};
+}); };

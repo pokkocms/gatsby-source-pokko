@@ -35,46 +35,25 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sync = void 0;
-var sqlite3_1 = __importDefault(require("sqlite3"));
-var client_1 = require("../api/client");
-var api_1 = require("./api");
-var db_1 = require("./db");
-var schema_1 = require("./schema");
-var graphql_1 = require("graphql");
-exports.sync = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var db, client, res, schema;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                db = new sqlite3_1.default.Database(":memory:");
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, , 6, 7]);
-                return [4 /*yield*/, db_1.initDb(db)];
-            case 2:
-                _a.sent();
-                client = client_1.createClient("87a71e8f-e9a9-44e7-9035-f6e4b524d9fe", "b3lCqJVzQaKr70C/Fpx/MWNz/3i1POcOqaVWHhLE");
-                return [4 /*yield*/, client.query({ query: api_1.syncQuery })];
-            case 3:
-                res = _a.sent();
-                return [4 /*yield*/, db_1.storeSync(db, res.data.sync.nodes)];
-            case 4:
-                _a.sent();
-                return [4 /*yield*/, schema_1.dbToSchema(db)];
-            case 5:
-                schema = _a.sent();
-                console.log(graphql_1.printSchema(schema));
-                return [3 /*break*/, 7];
-            case 6:
-                db.close();
-                return [7 /*endfinally*/];
-            case 7: return [2 /*return*/];
-        }
+exports.sourceNodes = void 0;
+var taxonomy_1 = require("./taxonomy");
+var entries_1 = require("./entries");
+exports.sourceNodes = function sourceNodes(args, pluginOptions) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, entries_1.entries(args, pluginOptions)];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, taxonomy_1.taxonomyDynamic(args, pluginOptions)];
+                case 2:
+                    _a.sent();
+                    return [4 /*yield*/, taxonomy_1.taxonomyStatic(args, pluginOptions)];
+                case 3:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
     });
-}); };
-exports.sync();
+};

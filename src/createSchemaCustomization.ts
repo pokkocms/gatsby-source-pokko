@@ -1,9 +1,9 @@
 import { CreateSchemaCustomizationArgs } from "gatsby";
-import { PluginOptions } from "./sourceNodes";
-import { db } from "./sync/db";
+import { getDb } from "./sync/db";
 import { listModels } from "./sync/schema";
 import { runSync } from "./sync/api";
-import { buildTypes } from "./types";
+import { PluginOptions } from "./types";
+import { buildTypes } from "./types/index";
 
 const extractFieldType = (field: any) => {
   switch (field.type) {
@@ -43,9 +43,9 @@ export const createSchemaCustomization = async (
 
   await runSync(project, token);
 
-  const models = await listModels(db);
+  const models = await listModels(getDb(project));
 
-  args.actions.createTypes(buildTypes(args));
+  args.actions.createTypes(buildTypes(project, args));
 
   models
     .filter((mod) => mod.usage === "base")

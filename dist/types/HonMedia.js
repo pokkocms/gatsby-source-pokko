@@ -39,7 +39,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HonMedia = void 0;
 var gatsby_source_filesystem_1 = require("gatsby-source-filesystem");
 var db_1 = require("../sync/db");
-exports.HonMedia = function (args) {
+exports.HonMedia = function (project, args) {
+    var db = db_1.getDb(project);
     return args.schema.buildObjectType({
         name: "HonMedia",
         extensions: { infer: false },
@@ -51,7 +52,7 @@ exports.HonMedia = function (args) {
                     var item, storage;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, db_1.getAsync(db_1.db, "select * from media_item where id = ?", [source.id])];
+                            case 0: return [4 /*yield*/, db_1.getAsync(db, "select * from media_item where id = ?", [source.id])];
                             case 1:
                                 item = _a.sent();
                                 if (!item) {
@@ -69,7 +70,7 @@ exports.HonMedia = function (args) {
                     var item, storage2, fileNode;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, db_1.getAsync(db_1.db, "select * from media_item where id = ?", [source.id])];
+                            case 0: return [4 /*yield*/, db_1.getAsync(db, "select * from media_item where id = ?", [source.id])];
                             case 1:
                                 item = _a.sent();
                                 if (!item) {

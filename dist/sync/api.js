@@ -67,21 +67,23 @@ var loadPage = function (client, after, skip) { return __awaiter(void 0, void 0,
     });
 }); };
 exports.runSync = function (project, token) { return __awaiter(void 0, void 0, void 0, function () {
-    var client, after, res;
+    var db, client, after, res;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, db_1.initDb(db_1.db)];
+            case 0:
+                db = db_1.getDb(project);
+                return [4 /*yield*/, db_1.initDb(db)];
             case 1:
                 _a.sent();
                 client = client_1.createClient(project, token);
-                return [4 /*yield*/, db_1.getStamp(db_1.db)];
+                return [4 /*yield*/, db_1.getStamp(db)];
             case 2:
                 after = _a.sent();
                 console.log("[honegumi] looking for changes since", after);
                 return [4 /*yield*/, loadPage(client, after, 0)];
             case 3:
                 res = _a.sent();
-                return [4 /*yield*/, db_1.storeSync(db_1.db, res)];
+                return [4 /*yield*/, db_1.storeSync(db, res)];
             case 4:
                 _a.sent();
                 return [2 /*return*/];

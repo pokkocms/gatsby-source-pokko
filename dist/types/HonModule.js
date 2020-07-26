@@ -39,7 +39,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HonModule = void 0;
 var schema_1 = require("../sync/schema");
 var db_1 = require("../sync/db");
-exports.HonModule = function (args) {
+exports.HonModule = function (project, args) {
+    var db = db_1.getDb(project);
     return args.schema.buildInterfaceType({
         name: "HonModule",
         fields: {
@@ -49,7 +50,7 @@ exports.HonModule = function (args) {
             var models, model;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, schema_1.listModels(db_1.db)];
+                    case 0: return [4 /*yield*/, schema_1.listModels(db)];
                     case 1:
                         models = _a.sent();
                         model = models.find(function (mod) { return mod.id === source.type; });

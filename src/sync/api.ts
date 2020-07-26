@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { initDb, db, getStamp, storeSync } from "./db";
+import { initDb, getDb, getStamp, storeSync } from "./db";
 import { createClient } from "../api/client";
 import ApolloClient from "apollo-client";
 import { NormalizedCacheObject } from "apollo-cache-inmemory";
@@ -43,6 +43,7 @@ const loadPage = async (
 };
 
 export const runSync = async (project: string, token: string) => {
+  const db = getDb(project);
   await initDb(db);
   const client = createClient(project, token);
 

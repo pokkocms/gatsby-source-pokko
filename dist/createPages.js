@@ -37,37 +37,49 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createPages = void 0;
-var query = "\n{\n  allHonTaxonomy {\n    nodes {\n      id\n      path\n      model\n      entryId\n    }\n  }\n}\n";
+var query = "\n{\n  allHonTaxonomy {\n    nodes {\n      id\n      taxonomyPath: path\n      model\n      entryId\n    }\n  }\n}\n";
 exports.createPages = function (_a, options) {
     var createPage = _a.actions.createPage, graphql = _a.graphql;
     return __awaiter(void 0, void 0, void 0, function () {
-        var result;
+        var taxonomy, result, matches;
         var _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
-                    if (!options.defaultTaxonomy || !options.resolveComponent) {
+                    taxonomy = options.taxonomy;
+                    if (!taxonomy) {
                         return [2 /*return*/];
                     }
                     return [4 /*yield*/, graphql(query)];
                 case 1:
                     result = _c.sent();
-                    (_b = result.data) === null || _b === void 0 ? void 0 : _b.allHonTaxonomy.nodes.forEach(function (node) {
+                    if (result.errors) {
+                        console.warn("[honegumi] createPages query failed", result.errors);
+                    }
+                    if (!((_b = result.data) === null || _b === void 0 ? void 0 : _b.allHonTaxonomy.nodes)) {
+                        return [2 /*return*/];
+                    }
+                    matches = taxonomy.filter
+                        ? result.data.allHonTaxonomy.nodes.filter(taxonomy.filter)
+                        : result.data.allHonTaxonomy.nodes;
+                    matches.forEach(function (node) {
                         try {
-                            var component = options.resolveComponent(node);
+                            var component = taxonomy.resolveComponent(node);
+                            var context = {
+                                id: node.id,
+                                taxonomyPath: node.taxonomyPath,
+                                model: node.model,
+                                entryId: node.entryId,
+                            };
+                            var path = node.taxonomyPath;
                             createPage({
-                                path: node.path,
                                 component: component,
-                                context: {
-                                    id: node.id,
-                                    taxonomyPath: node.path,
-                                    model: node.model,
-                                    entryId: node.entryId,
-                                },
+                                context: context,
+                                path: path,
                             });
                         }
                         catch (ex) {
-                            console.warn("[honegumi] error creating page for path '" + node.path + "' of type '" + node.model + "'");
+                            console.warn("[honegumi] error creating page for path '" + node.taxonomyPath + "' of type '" + node.model + "'");
                             console.warn(ex);
                         }
                     });
