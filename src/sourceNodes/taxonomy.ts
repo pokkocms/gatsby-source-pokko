@@ -1,5 +1,5 @@
 import { SourceNodesArgs } from "gatsby";
-import { allAsync, getDb } from "../sync/db";
+import { allAsync, getDb } from "honegumi-sync";
 import { PluginOptions } from "../types";
 
 export const taxonomyDynamic = async (

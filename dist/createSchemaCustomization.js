@@ -48,9 +48,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createSchemaCustomization = void 0;
-var db_1 = require("./sync/db");
+var honegumi_sync_1 = require("honegumi-sync");
 var schema_1 = require("./sync/schema");
-var api_1 = require("./sync/api");
 var index_1 = require("./types/index");
 var extractFieldType = function (field) {
     switch (field.type) {
@@ -83,10 +82,10 @@ exports.createSchemaCustomization = function (args, pluginOptions) { return __aw
         switch (_a.label) {
             case 0:
                 project = pluginOptions.project, token = pluginOptions.token;
-                return [4 /*yield*/, api_1.runSync(project, token)];
+                return [4 /*yield*/, honegumi_sync_1.runSync(project, token)];
             case 1:
                 _a.sent();
-                return [4 /*yield*/, schema_1.listModels(db_1.getDb(project))];
+                return [4 /*yield*/, schema_1.listModels(honegumi_sync_1.getDb(project))];
             case 2:
                 models = _a.sent();
                 args.actions.createTypes(index_1.buildTypes(project, args));

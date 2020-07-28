@@ -1,6 +1,6 @@
 import { CreateSchemaCustomizationArgs } from "gatsby";
 import { listModels } from "../sync/schema";
-import { getDb } from "../sync/db";
+import { getDb } from "honegumi-sync";
 
 export const HonModule = (
   project: string,

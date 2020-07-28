@@ -48,14 +48,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.entries = void 0;
-var db_1 = require("../sync/db");
+var honegumi_sync_1 = require("honegumi-sync");
 exports.entries = function (args, pluginOptions) { return __awaiter(void 0, void 0, void 0, function () {
     var db, entries;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                db = db_1.getDb(pluginOptions.project);
-                return [4 /*yield*/, db_1.allAsync(db, "select e.*, m.alias as __model from entry e inner join model m on e.model_id = m.id")];
+                db = honegumi_sync_1.getDb(pluginOptions.project);
+                return [4 /*yield*/, honegumi_sync_1.allAsync(db, "select e.*, m.alias as __model from entry e inner join model m on e.model_id = m.id")];
             case 1:
                 entries = _a.sent();
                 entries.forEach(function (ent) {

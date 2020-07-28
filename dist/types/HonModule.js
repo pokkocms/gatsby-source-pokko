@@ -38,9 +38,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HonModule = void 0;
 var schema_1 = require("../sync/schema");
-var db_1 = require("../sync/db");
+var honegumi_sync_1 = require("honegumi-sync");
 exports.HonModule = function (project, args) {
-    var db = db_1.getDb(project);
+    var db = honegumi_sync_1.getDb(project);
     return args.schema.buildInterfaceType({
         name: "HonModule",
         fields: {

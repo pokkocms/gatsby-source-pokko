@@ -1,7 +1,6 @@
 import { CreateSchemaCustomizationArgs } from "gatsby";
-import { getDb } from "./sync/db";
+import { getDb, runSync } from "honegumi-sync";
 import { listModels } from "./sync/schema";
-import { runSync } from "./sync/api";
 import { PluginOptions } from "./types";
 import { buildTypes } from "./types/index";
 

@@ -1,6 +1,6 @@
 import { CreateSchemaCustomizationArgs } from "gatsby";
 import { createRemoteFileNode } from "gatsby-source-filesystem";
-import { getAsync, getDb } from "../sync/db";
+import { getAsync, getDb } from "honegumi-sync";
 
 export const HonMedia = (
   project: string,
