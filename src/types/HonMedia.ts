@@ -33,18 +33,10 @@ export const HonMedia = (
       file: {
         type: "File",
         resolve: async (source: any) => {
-          const item = await getAsync(
-            db,
-            `select * from media_item where id = ?`,
-            [source.id]
-          );
-          if (!item) {
-            return null;
-          }
+          const url = `https://d2urwbt8hp3c27.cloudfront.net/${project}/${source.id}`;
 
-          const storage2 = JSON.parse(item.storage);
           const fileNode = await createRemoteFileNode({
-            url: storage2.public + "/" + source.id,
+            url,
             parentNodeId: source.id,
             cache: args.cache,
             getCache: args.getCache,
