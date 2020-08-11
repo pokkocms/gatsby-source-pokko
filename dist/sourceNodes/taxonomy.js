@@ -63,18 +63,17 @@ exports.taxonomyDynamic = function (args, pluginOptions) { return __awaiter(void
             case 0:
                 project = pluginOptions.project, environment = pluginOptions.environment, taxonomy = pluginOptions.taxonomy;
                 db = honegumi_sync_1.getDb(project, environment);
-                return [4 /*yield*/, honegumi_sync_1.allAsync(db, "\nselect\n    t.id,\n    t.config,\n    t.path,\n    m.alias as model,\n    e.id as entryid\nfrom\n    taxonomy t\n        inner join json_each(t.config, '$.models') mid\n        inner join model m on m.id = mid.value\n        inner join entry e on e.model_id = m.id or m.inherits like e.model_id\nwhere\n    t.type = 'dynamic';\n    ")];
+                return [4 /*yield*/, honegumi_sync_1.allAsync(db, "\nselect\n    t.id,\n    t.config,\n    t.path,\n    m.alias as model,\n    e.value_id as value_id,\n    json_extract(vf_alias.value_scalar, '$.text') as alias,\n    json_extract(vf_fragment.value_scalar, '$.text') as fragment\nfrom\n    taxonomy t\n        inner join json_each(t.config, '$.models') mid\n        inner join model m on m.id = mid.value\n        inner join entry e on e.model_id = m.id or m.inherits like e.model_id\n        left join value_field vf_alias on vf_alias.value_id = e.value_id and vf_alias.model_field_id = json_extract(t.config, '$.aliasField')\n        left join value_field vf_fragment on vf_fragment.value_id = e.value_id and vf_fragment.model_field_id = json_extract(t.config, '$.fragmentField')\nwhere\n    t.type = 'dynamic';\n    ")];
             case 1:
                 taxDyn = _a.sent();
                 taxDyn.forEach(function (ent) {
                     var buildPath = function (input) {
                         var ret = JSON.parse(input.path).filter(function (_, idx) { return idx >= ((taxonomy === null || taxonomy === void 0 ? void 0 : taxonomy.skip) || 0); });
                         var config = JSON.parse(input.config);
-                        var value = JSON.parse(input.value);
+                        var alias = input.alias, fragment = input.fragment;
                         if (config.aliasField && config.fragmentType && config.fragmentField) {
-                            var alias = value[config.aliasField];
                             if (config.fragmentType.startsWith("date")) {
-                                var dt = new Date(value[config.fragmentField]);
+                                var dt = new Date(fragment);
                                 switch (config.fragmentType) {
                                     case "date_year":
                                         return "/" + __spreadArrays(ret, [dt.getFullYear(), alias]).join("/");
@@ -93,7 +92,7 @@ exports.taxonomyDynamic = function (args, pluginOptions) { return __awaiter(void
                             }
                         }
                         else if (config.aliasField) {
-                            return "/" + __spreadArrays(ret, [value[config.aliasField]]).join("/");
+                            return "/" + __spreadArrays(ret, [alias]).join("/");
                         }
                         return null;
                     };

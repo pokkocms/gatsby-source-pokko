@@ -17,12 +17,16 @@ select
     t.config,
     t.path,
     m.alias as model,
-    e.id as entryid
+    e.value_id as value_id,
+    json_extract(vf_alias.value_scalar, '$.text') as alias,
+    json_extract(vf_fragment.value_scalar, '$.text') as fragment
 from
     taxonomy t
         inner join json_each(t.config, '$.models') mid
         inner join model m on m.id = mid.value
         inner join entry e on e.model_id = m.id or m.inherits like e.model_id
+        left join value_field vf_alias on vf_alias.value_id = e.value_id and vf_alias.model_field_id = json_extract(t.config, '$.aliasField')
+        left join value_field vf_fragment on vf_fragment.value_id = e.value_id and vf_fragment.model_field_id = json_extract(t.config, '$.fragmentField')
 where
     t.type = 'dynamic';
     `
@@ -34,13 +38,11 @@ where
         (_: any, idx: number) => idx >= (taxonomy?.skip || 0)
       );
       const config = JSON.parse(input.config);
-      const value = JSON.parse(input.value);
+      const { alias, fragment } = input;
 
       if (config.aliasField && config.fragmentType && config.fragmentField) {
-        const alias = value[config.aliasField];
-
         if (config.fragmentType.startsWith("date")) {
-          const dt = new Date(value[config.fragmentField]);
+          const dt = new Date(fragment);
 
           switch (config.fragmentType) {
             case "date_year":
@@ -64,7 +66,7 @@ where
           }
         }
       } else if (config.aliasField) {
-        return "/" + [...ret, value[config.aliasField]].join("/");
+        return "/" + [...ret, alias].join("/");
       }
 
       return null;
