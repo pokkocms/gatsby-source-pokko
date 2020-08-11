@@ -57,13 +57,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.taxonomyStatic = exports.taxonomyDynamic = void 0;
 var honegumi_sync_1 = require("honegumi-sync");
 exports.taxonomyDynamic = function (args, pluginOptions) { return __awaiter(void 0, void 0, void 0, function () {
-    var db, taxonomy, taxDyn;
+    var project, environment, taxonomy, db, taxDyn;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                db = honegumi_sync_1.getDb(pluginOptions.project);
-                taxonomy = pluginOptions.taxonomy;
-                return [4 /*yield*/, honegumi_sync_1.allAsync(db, "\nselect\n    t.id,\n    t.config,\n    t.path,\n    m.alias as model,\n    e.id as entryid,\n    e.value\nfrom\n    taxonomy t\n        inner join json_each(t.config, '$.models') mid\n        inner join model m on m.id = mid.value\n        inner join entry e on e.model_id = m.id or m.inherits like e.model_id\nwhere\n    t.type = 'dynamic';\n    ")];
+                project = pluginOptions.project, environment = pluginOptions.environment, taxonomy = pluginOptions.taxonomy;
+                db = honegumi_sync_1.getDb(project, environment);
+                return [4 /*yield*/, honegumi_sync_1.allAsync(db, "\nselect\n    t.id,\n    t.config,\n    t.path,\n    m.alias as model,\n    e.id as entryid\nfrom\n    taxonomy t\n        inner join json_each(t.config, '$.models') mid\n        inner join model m on m.id = mid.value\n        inner join entry e on e.model_id = m.id or m.inherits like e.model_id\nwhere\n    t.type = 'dynamic';\n    ")];
             case 1:
                 taxDyn = _a.sent();
                 taxDyn.forEach(function (ent) {
@@ -117,11 +117,12 @@ exports.taxonomyDynamic = function (args, pluginOptions) { return __awaiter(void
     });
 }); };
 exports.taxonomyStatic = function (args, pluginOptions) { return __awaiter(void 0, void 0, void 0, function () {
-    var db, taxonomy, taxEntry;
+    var project, environment, db, taxonomy, taxEntry;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                db = honegumi_sync_1.getDb(pluginOptions.project);
+                project = pluginOptions.project, environment = pluginOptions.environment;
+                db = honegumi_sync_1.getDb(project, environment);
                 taxonomy = pluginOptions.taxonomy;
                 return [4 /*yield*/, honegumi_sync_1.allAsync(db, "\nselect\n    t.id,\n    t.path,\n    t.entry_id as entryid,\n    m.alias as model\nfrom\n    taxonomy t\n        inner join entry e on t.entry_id = e.id\n        inner join model m on m.id = e.model_id\nwhere\n    t.type = 'entry';\n    ")];
             case 1:

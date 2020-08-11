@@ -50,21 +50,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.entries = void 0;
 var honegumi_sync_1 = require("honegumi-sync");
 exports.entries = function (args, pluginOptions) { return __awaiter(void 0, void 0, void 0, function () {
-    var db, entries;
+    var project, environment, db, entries;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                db = honegumi_sync_1.getDb(pluginOptions.project);
-                return [4 /*yield*/, honegumi_sync_1.allAsync(db, "select e.*, m.alias as __model from entry e inner join model m on e.model_id = m.id")];
+                project = pluginOptions.project, environment = pluginOptions.environment;
+                db = honegumi_sync_1.getDb(project, environment);
+                return [4 /*yield*/, honegumi_sync_1.allAsync(db, "select e.id, e.value_id, m.alias as model from entry e inner join model m on e.model_id = m.id")];
             case 1:
                 entries = _a.sent();
                 entries.forEach(function (ent) {
-                    var value = JSON.parse(ent.value || "{}");
                     args.actions.createNode(__assign(__assign({ internal: {
-                            contentDigest: args.createContentDigest(value),
-                            type: "Hon" + ent.__model,
-                            content: JSON.stringify(value),
-                        } }, value), { id: args.createNodeId("hon-" + ent.id) }));
+                            contentDigest: args.createContentDigest(ent),
+                            type: "Hon" + ent.model,
+                            content: JSON.stringify(ent),
+                        } }, ent), { id: args.createNodeId("hon-" + ent.id) }));
                 });
                 return [2 /*return*/];
         }

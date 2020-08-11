@@ -8,6 +8,7 @@ export type TaxonomyNode = {
 export type PluginOptions = {
   token: string;
   project: string;
+  environment: string;
   taxonomy?: {
     skip?: number;
     filter?: (input: TaxonomyNode) => boolean;

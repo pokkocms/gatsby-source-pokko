@@ -6,8 +6,8 @@ export const taxonomyDynamic = async (
   args: SourceNodesArgs,
   pluginOptions: PluginOptions
 ) => {
-  const db = getDb(pluginOptions.project);
-  const { taxonomy } = pluginOptions;
+  const { project, environment, taxonomy } = pluginOptions;
+  const db = getDb(project, environment);
 
   const taxDyn = await allAsync(
     db,
@@ -17,8 +17,7 @@ select
     t.config,
     t.path,
     m.alias as model,
-    e.id as entryid,
-    e.value
+    e.id as entryid
 from
     taxonomy t
         inner join json_each(t.config, '$.models') mid
@@ -99,7 +98,8 @@ export const taxonomyStatic = async (
   args: SourceNodesArgs,
   pluginOptions: PluginOptions
 ) => {
-  const db = getDb(pluginOptions.project);
+  const { project, environment } = pluginOptions;
+  const db = getDb(project, environment);
   const { taxonomy } = pluginOptions;
 
   const taxEntry = await allAsync(

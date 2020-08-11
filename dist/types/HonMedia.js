@@ -39,8 +39,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.HonMedia = void 0;
 var gatsby_source_filesystem_1 = require("gatsby-source-filesystem");
 var honegumi_sync_1 = require("honegumi-sync");
-exports.HonMedia = function (project, args) {
-    var db = honegumi_sync_1.getDb(project);
+exports.HonMedia = function (project, environment, args) {
+    var db = honegumi_sync_1.getDb(project, environment);
     return args.schema.buildObjectType({
         name: "HonMedia",
         extensions: { infer: false },
@@ -49,36 +49,23 @@ exports.HonMedia = function (project, args) {
             url: {
                 type: "String",
                 resolve: function (source) { return __awaiter(void 0, void 0, void 0, function () {
-                    var item, storage;
+                    var url;
                     return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0: return [4 /*yield*/, honegumi_sync_1.getAsync(db, "select * from media_item where id = ?", [source.id])];
-                            case 1:
-                                item = _a.sent();
-                                if (!item) {
-                                    return [2 /*return*/, null];
-                                }
-                                storage = JSON.parse(item.storage);
-                                return [2 /*return*/, storage.public + "/" + storage.path];
-                        }
+                        url = "https://d2urwbt8hp3c27.cloudfront.net/" + project + "/" + source.id;
+                        return [2 /*return*/, url];
                     });
                 }); },
             },
             file: {
                 type: "File",
                 resolve: function (source) { return __awaiter(void 0, void 0, void 0, function () {
-                    var item, storage2, fileNode;
+                    var url, fileNode;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, honegumi_sync_1.getAsync(db, "select * from media_item where id = ?", [source.id])];
-                            case 1:
-                                item = _a.sent();
-                                if (!item) {
-                                    return [2 /*return*/, null];
-                                }
-                                storage2 = JSON.parse(item.storage);
+                            case 0:
+                                url = "https://d2urwbt8hp3c27.cloudfront.net/" + project + "/" + source.id;
                                 return [4 /*yield*/, gatsby_source_filesystem_1.createRemoteFileNode({
-                                        url: storage2.public + "/" + source.id,
+                                        url: url,
                                         parentNodeId: source.id,
                                         cache: args.cache,
                                         getCache: args.getCache,
@@ -87,7 +74,7 @@ exports.HonMedia = function (project, args) {
                                         store: args.store,
                                         reporter: args.reporter,
                                     })];
-                            case 2:
+                            case 1:
                                 fileNode = _a.sent();
                                 return [2 /*return*/, fileNode];
                         }

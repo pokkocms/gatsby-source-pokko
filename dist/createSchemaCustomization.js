@@ -64,83 +64,69 @@ var extractFieldType = function (field) {
             return "String";
     }
 };
-var extractField = function (fld) {
+var extractField = function (project, environment, fld) {
     return {
         type: extractFieldType(fld),
-        resolve: function (source) {
-            if (source.value) {
-                // from module
-                return source.value[fld.id];
-            }
-            return source[fld.id];
-        },
+        resolve: function (source) { return __awaiter(void 0, void 0, void 0, function () {
+            var db, _a, val, val, val, val;
+            var _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        db = honegumi_sync_1.getDb(project, environment);
+                        _a = fld.type;
+                        switch (_a) {
+                            case "text": return [3 /*break*/, 1];
+                            case "media": return [3 /*break*/, 3];
+                            case "link": return [3 /*break*/, 5];
+                            case "modules": return [3 /*break*/, 7];
+                        }
+                        return [3 /*break*/, 9];
+                    case 1: return [4 /*yield*/, honegumi_sync_1.getAsync(db, "select value_scalar from value_field where value_id = ? and model_field_id = ?", [source.value_id, fld.id])];
+                    case 2:
+                        val = _c.sent();
+                        return [2 /*return*/, (_b = JSON.parse((val === null || val === void 0 ? void 0 : val.value_scalar) || "{}")) === null || _b === void 0 ? void 0 : _b.text];
+                    case 3: return [4 /*yield*/, honegumi_sync_1.getAsync(db, "select value_media_id as id from value_field where value_id = ? and model_field_id = ?", [source.value_id, fld.id])];
+                    case 4:
+                        val = _c.sent();
+                        return [2 /*return*/, val];
+                    case 5: return [4 /*yield*/, honegumi_sync_1.getAsync(db, "select value_entry_id as id from value_field where value_id = ? and model_field_id = ?", [source.value_id, fld.id])];
+                    case 6:
+                        val = _c.sent();
+                        return [2 /*return*/, val];
+                    case 7: return [4 /*yield*/, honegumi_sync_1.allAsync(db, "select\n              vf.value_value_id as id,\n              vf.value_value_id as value_id,\n              m.alias as model\n            from \n              value_field vf\n              inner join value v on v.id = vf.value_value_id \n              inner join model m on m.id = v.model_id\n            where \n              vf.value_id = ?\n              and vf.model_field_id = ?\n            order by\n              _index", [source.value_id, fld.id])];
+                    case 8:
+                        val = _c.sent();
+                        return [2 /*return*/, val];
+                    case 9: return [2 /*return*/, null];
+                }
+            });
+        }); },
     };
 };
 exports.createSchemaCustomization = function (args, pluginOptions) { return __awaiter(void 0, void 0, void 0, function () {
-    var project, token, models, listInterfaces;
+    var project, environment, token, models;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                project = pluginOptions.project, token = pluginOptions.token;
-                return [4 /*yield*/, honegumi_sync_1.runSync(project, token)];
+                project = pluginOptions.project, environment = pluginOptions.environment, token = pluginOptions.token;
+                return [4 /*yield*/, honegumi_sync_1.runSync(project, environment, token)];
             case 1:
                 _a.sent();
-                return [4 /*yield*/, schema_1.listModels(honegumi_sync_1.getDb(project))];
+                return [4 /*yield*/, schema_1.listModels(honegumi_sync_1.getDb(project, environment))];
             case 2:
                 models = _a.sent();
-                args.actions.createTypes(index_1.buildTypes(project, args));
-                models
-                    .filter(function (mod) { return mod.usage === "base"; })
-                    .forEach(function (mod) {
-                    args.actions.createTypes([
-                        args.schema.buildInterfaceType({
-                            name: "Hon" + mod.alias,
-                            extensions: { infer: false },
-                            fields: __assign({}, mod.fields
-                                .map(function (fld) { return ({
-                                name: fld.alias,
-                                value: extractField(fld),
-                            }); })
-                                .reduce(function (p, c) {
-                                var _a;
-                                return (__assign(__assign({}, p), (_a = {}, _a[c.name] = c.value, _a)));
-                            }, {})),
-                        }),
-                    ]);
-                });
-                listInterfaces = function (mod) {
-                    var ret = ["Node"];
-                    switch (mod.usage) {
-                        case "entry":
-                            ret.push("HonEntry");
-                            break;
-                        case "module":
-                            ret.push("HonModule");
-                            break;
-                    }
-                    if (mod.inherits) {
-                        var inherits = JSON.parse(mod.inherits);
-                        inherits.forEach(function (id) {
-                            var inhMod = models.find(function (ent) { return ent.id === id; });
-                            if (inhMod) {
-                                ret.push("Hon" + inhMod.alias);
-                            }
-                        });
-                    }
-                    return ret;
-                };
-                models
-                    .filter(function (mod) { return mod.usage !== "base"; })
-                    .forEach(function (mod) {
+                args.actions.createTypes(index_1.buildTypes(project, environment, args));
+                models.forEach(function (mod) {
                     args.actions.createTypes([
                         args.schema.buildObjectType({
                             name: "Hon" + mod.alias,
                             extensions: { infer: false },
-                            interfaces: listInterfaces(mod),
+                            interfaces: ["Node", "HonModule"],
                             fields: __assign({ id: "ID!" }, mod.fields
                                 .map(function (fld) { return ({
                                 name: fld.alias,
-                                value: extractField(fld),
+                                value: extractField(project, environment, fld),
                             }); })
                                 .reduce(function (p, c) {
                                 var _a;

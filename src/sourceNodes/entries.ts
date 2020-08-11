@@ -6,20 +6,20 @@ export const entries = async (
   args: SourceNodesArgs,
   pluginOptions: PluginOptions
 ) => {
-  const db = getDb(pluginOptions.project);
+  const { project, environment } = pluginOptions;
+  const db = getDb(project, environment);
   const entries = await allAsync(
     db,
-    "select e.*, m.alias as __model from entry e inner join model m on e.model_id = m.id"
+    "select e.id, e.value_id, m.alias as model from entry e inner join model m on e.model_id = m.id"
   );
   entries.forEach((ent) => {
-    const value = JSON.parse(ent.value || "{}");
     args.actions.createNode({
       internal: {
-        contentDigest: args.createContentDigest(value),
-        type: `Hon${ent.__model}`,
-        content: JSON.stringify(value),
+        contentDigest: args.createContentDigest(ent),
+        type: `Hon${ent.model}`,
+        content: JSON.stringify(ent),
       },
-      ...value,
+      ...ent,
       id: args.createNodeId(`hon-${ent.id}`),
     });
   });

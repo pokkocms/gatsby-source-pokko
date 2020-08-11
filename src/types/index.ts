@@ -7,6 +7,9 @@ import { HonTaxonomy } from "./HonTaxonomy";
 
 export const buildTypes = (
   project: string,
+  environment: string,
   args: CreateSchemaCustomizationArgs
 ): GatsbyGraphQLType[] =>
-  [HonEntry, HonMedia, HonModule, HonTaxonomy].map((typ) => typ(project, args));
+  [HonEntry, HonMedia, HonModule, HonTaxonomy].map((typ) =>
+    typ(project, environment, args)
+  );

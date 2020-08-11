@@ -4,9 +4,10 @@ import { getAsync, getDb } from "honegumi-sync";
 
 export const HonMedia = (
   project: string,
+  environment: string,
   args: CreateSchemaCustomizationArgs
 ) => {
-  const db = getDb(project);
+  const db = getDb(project, environment);
 
   return args.schema.buildObjectType({
     name: "HonMedia",
@@ -16,18 +17,9 @@ export const HonMedia = (
       url: {
         type: "String",
         resolve: async (source: any) => {
-          const item = await getAsync(
-            db,
-            `select * from media_item where id = ?`,
-            [source.id]
-          );
-          if (!item) {
-            return null;
-          }
+          const url = `https://d2urwbt8hp3c27.cloudfront.net/${project}/${source.id}`;
 
-          const storage = JSON.parse(item.storage);
-
-          return storage.public + "/" + storage.path;
+          return url;
         },
       },
       file: {

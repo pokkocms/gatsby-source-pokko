@@ -2,6 +2,7 @@ import { CreateSchemaCustomizationArgs } from "gatsby";
 
 export const HonTaxonomy = (
   _project: string,
+  _environment: string,
   args: CreateSchemaCustomizationArgs
 ) =>
   args.schema.buildObjectType({

@@ -17,7 +17,7 @@
   "dependencies": {
     "gatsby": "^2.23.22",
     "gatsby-source-filesystem": "^2.3.19",
-    "honegumi-sync": "brendanmckenzie/honegumi-sync.git"
+    "honegumi-sync": "brendanmckenzie/honegumi-sync"
   },
   "devDependencies": {
     "ts-node": "^8.10.2",

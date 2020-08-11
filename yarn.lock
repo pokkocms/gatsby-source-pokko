@@ -5927,9 +5927,9 @@ homedir-polyfill@^1.0.1:
   dependencies:
     parse-passwd "^1.0.0"
 
-honegumi-sync@brendanmckenzie/honegumi-sync.git:
+honegumi-sync@brendanmckenzie/honegumi-sync:
   version "1.0.0"
-  resolved "https://codeload.github.com/brendanmckenzie/honegumi-sync/tar.gz/151cd03ddd2b7451344f2f15a6aeec7b4dd05712"
+  resolved "https://codeload.github.com/brendanmckenzie/honegumi-sync/tar.gz/337b218945aabf85016eda8ec2bf580cf6e86b65"
   dependencies:
     "@apollo/client" "^3.1.0"
     cross-fetch "^3.0.5"

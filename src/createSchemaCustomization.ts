@@ -1,5 +1,5 @@
 import { CreateSchemaCustomizationArgs } from "gatsby";
-import { getDb, runSync } from "honegumi-sync";
+import { getDb, runSync, getAsync, allAsync } from "honegumi-sync";
 import { listModels } from "./sync/schema";
 import { PluginOptions } from "./types";
 import { buildTypes } from "./types/index";
@@ -19,17 +19,67 @@ const extractFieldType = (field: any) => {
 };
 
 const extractField = (
+  project: string,
+  environment: string,
   fld: any
 ): { type: string; resolve: (source: any) => any } => {
   return {
     type: extractFieldType(fld),
-    resolve: (source: any) => {
-      if (source.value) {
-        // from module
-        return source.value[fld.id];
+    resolve: async (source: any) => {
+      const db = getDb(project, environment);
+
+      switch (fld.type) {
+        case "text": {
+          const val = await getAsync(
+            db,
+            "select value_scalar from value_field where value_id = ? and model_field_id = ?",
+            [source.value_id, fld.id]
+          );
+
+          return JSON.parse(val?.value_scalar || "{}")?.text;
+        }
+        case "media": {
+          const val = await getAsync(
+            db,
+            "select value_media_id as id from value_field where value_id = ? and model_field_id = ?",
+            [source.value_id, fld.id]
+          );
+
+          return val;
+        }
+        case "link": {
+          const val = await getAsync(
+            db,
+            "select value_entry_id as id from value_field where value_id = ? and model_field_id = ?",
+            [source.value_id, fld.id]
+          );
+
+          return val;
+        }
+        case "modules": {
+          const val = await allAsync(
+            db,
+            `select
+              vf.value_value_id as id,
+              vf.value_value_id as value_id,
+              m.alias as model
+            from 
+              value_field vf
+              inner join value v on v.id = vf.value_value_id 
+              inner join model m on m.id = v.model_id
+            where 
+              vf.value_id = ?
+              and vf.model_field_id = ?
+            order by
+              _index`,
+            [source.value_id, fld.id]
+          );
+
+          return val;
+        }
       }
 
-      return source[fld.id];
+      return null;
     },
   };
 };
@@ -38,77 +88,30 @@ export const createSchemaCustomization = async (
   args: CreateSchemaCustomizationArgs,
   pluginOptions: PluginOptions
 ) => {
-  const { project, token } = pluginOptions;
+  const { project, environment, token } = pluginOptions;
 
-  await runSync(project, token);
+  await runSync(project, environment, token);
 
-  const models = await listModels(getDb(project));
+  const models = await listModels(getDb(project, environment));
 
-  args.actions.createTypes(buildTypes(project, args));
+  args.actions.createTypes(buildTypes(project, environment, args));
 
-  models
-    .filter((mod) => mod.usage === "base")
-    .forEach((mod) => {
-      args.actions.createTypes([
-        args.schema.buildInterfaceType({
-          name: `Hon${mod.alias}`,
-          extensions: { infer: false },
-          fields: {
-            ...mod.fields
-              .map((fld: any) => ({
-                name: fld.alias as string,
-                value: extractField(fld),
-              }))
-              .reduce((p: any, c: any) => ({ ...p, [c.name]: c.value }), {}),
-          },
-        }),
-      ]);
-    });
-
-  const listInterfaces = (mod: any): string[] => {
-    const ret = ["Node"];
-
-    switch (mod.usage) {
-      case "entry":
-        ret.push("HonEntry");
-        break;
-      case "module":
-        ret.push("HonModule");
-        break;
-    }
-
-    if (mod.inherits) {
-      const inherits = JSON.parse(mod.inherits);
-
-      inherits.forEach((id: string) => {
-        const inhMod = models.find((ent) => ent.id === id);
-        if (inhMod) {
-          ret.push(`Hon${inhMod.alias}`);
-        }
-      });
-    }
-
-    return ret;
-  };
-
-  models
-    .filter((mod) => mod.usage !== "base")
-    .forEach((mod) => {
-      args.actions.createTypes([
-        args.schema.buildObjectType({
-          name: `Hon${mod.alias}`,
-          extensions: { infer: false },
-          interfaces: listInterfaces(mod),
-          fields: {
-            id: "ID!",
-            ...mod.fields
-              .map((fld: any) => ({
-                name: fld.alias as string,
-                value: extractField(fld),
-              }))
-              .reduce((p: any, c: any) => ({ ...p, [c.name]: c.value }), {}),
-          },
-        }),
-      ]);
-    });
+  models.forEach((mod) => {
+    args.actions.createTypes([
+      args.schema.buildObjectType({
+        name: `Hon${mod.alias}`,
+        extensions: { infer: false },
+        interfaces: ["Node", "HonModule"],
+        fields: {
+          id: "ID!",
+          ...mod.fields
+            .map((fld: any) => ({
+              name: fld.alias as string,
+              value: extractField(project, environment, fld),
+            }))
+            .reduce((p: any, c: any) => ({ ...p, [c.name]: c.value }), {}),
+        },
+      }),
+    ]);
+  });
 };
