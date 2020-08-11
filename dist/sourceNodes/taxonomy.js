@@ -109,7 +109,7 @@ exports.taxonomyDynamic = function (args, pluginOptions) { return __awaiter(void
                             contentDigest: args.createContentDigest(value),
                             type: "HonTaxonomy",
                             content: JSON.stringify(value),
-                        } }, value), { id: args.createNodeId("hon-tax-" + value.entryId) }));
+                        } }, value), { id: args.createNodeId("hon-tax-" + ent.id + "-" + value.entryId) }));
                 });
                 return [2 /*return*/];
         }

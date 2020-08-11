@@ -92,7 +92,7 @@ where
         content: JSON.stringify(value),
       },
       ...value,
-      id: args.createNodeId(`hon-tax-${value.entryId}`),
+      id: args.createNodeId(`hon-tax-${ent.id}-${value.entryId}`),
     });
   });
 };
