@@ -17,6 +17,7 @@ select
     t.config,
     t.path,
     m.alias as model,
+    e.id as entryid,
     e.value_id as value_id,
     json_extract(vf_alias.value_scalar, '$.text') as alias,
     json_extract(vf_fragment.value_scalar, '$.text') as fragment
