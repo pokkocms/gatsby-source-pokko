@@ -1,5 +1,5 @@
 {
-  "name": "gatsby-source-honegumi",
+  "name": "gatsby-source-pokko",
   "version": "1.0.0",
   "description": "A minimal boilerplate for the essential files Gatsby looks for in a plugin",
   "main": "dist/gatsby-node.js",
@@ -17,7 +17,7 @@
   "dependencies": {
     "gatsby": "^2.23.22",
     "gatsby-source-filesystem": "^2.3.19",
-    "honegumi-sync": "brendanmckenzie/honegumi-sync"
+    "pokko-sync": "^0.0.1"
   },
   "devDependencies": {
     "ts-node": "^8.10.2",

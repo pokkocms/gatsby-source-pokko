@@ -1,5 +1,5 @@
 import { SourceNodesArgs } from "gatsby";
-import { allAsync, getDb } from "honegumi-sync";
+import { allAsync, getDb } from "pokko-sync";
 import { PluginOptions } from "../types";
 
 export const entries = async (
@@ -16,11 +16,11 @@ export const entries = async (
     args.actions.createNode({
       internal: {
         contentDigest: args.createContentDigest(ent),
-        type: `Hon${ent.model}`,
+        type: `Pok${ent.model}`,
         content: JSON.stringify(ent),
       },
       ...ent,
-      id: args.createNodeId(`hon-${ent.id}`),
+      id: args.createNodeId(`pok-${ent.id}`),
     });
   });
 };

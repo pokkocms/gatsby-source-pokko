@@ -1,15 +1,15 @@
 import { GatsbyGraphQLType, CreateSchemaCustomizationArgs } from "gatsby";
 
-import { HonEntry } from "./HonEntry";
-import { HonMedia } from "./HonMedia";
-import { HonModule } from "./HonModule";
-import { HonTaxonomy } from "./HonTaxonomy";
+import { PokEntry } from "./PokEntry";
+import { PokMedia } from "./PokMedia";
+import { PokModule } from "./PokModule";
+import { PokTaxonomy } from "./PokTaxonomy";
 
 export const buildTypes = (
   project: string,
   environment: string,
   args: CreateSchemaCustomizationArgs
 ): GatsbyGraphQLType[] =>
-  [HonEntry, HonMedia, HonModule, HonTaxonomy].map((typ) =>
+  [PokEntry, PokMedia, PokModule, PokTaxonomy].map((typ) =>
     typ(project, environment, args)
   );

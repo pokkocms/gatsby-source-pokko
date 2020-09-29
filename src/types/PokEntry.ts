@@ -1,12 +1,12 @@
-import { CreateSchemaCustomizationArgs } from "gatsby";
+import { CreateSchemaCustomizationArgs, GatsbyGraphQLType } from "gatsby";
 
-export const HonEntry = (
+export const PokEntry = (
   _project: string,
   _environment: string,
   args: CreateSchemaCustomizationArgs
-) =>
+): GatsbyGraphQLType =>
   args.schema.buildInterfaceType({
-    name: "HonEntry",
+    name: "PokEntry",
     fields: {
       id: "ID!",
     },

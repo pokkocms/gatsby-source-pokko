@@ -1,4 +1,4 @@
-import { allAsync } from "honegumi-sync";
+import { allAsync } from "pokko-sync";
 
 export const listModels = async (db: any) => {
   const models = await allAsync(db, `select * from model`);

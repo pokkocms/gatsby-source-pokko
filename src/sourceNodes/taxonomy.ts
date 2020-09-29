@@ -1,5 +1,5 @@
 import { SourceNodesArgs } from "gatsby";
-import { allAsync, getDb } from "honegumi-sync";
+import { allAsync, getDb } from "pokko-sync";
 import { PluginOptions } from "../types";
 
 export const taxonomyDynamic = async (
@@ -80,7 +80,7 @@ where
     }
 
     const value = {
-      entryId: args.createNodeId(`hon-${ent.entryid}`),
+      entryId: args.createNodeId(`pok-${ent.entryid}`),
       model: ent.model,
       path,
     };
@@ -88,11 +88,11 @@ where
     args.actions.createNode({
       internal: {
         contentDigest: args.createContentDigest(value),
-        type: "HonTaxonomy",
+        type: "PokTaxonomy",
         content: JSON.stringify(value),
       },
       ...value,
-      id: args.createNodeId(`hon-tax-${ent.id}-${value.entryId}`),
+      id: args.createNodeId(`pok-tax-${ent.id}-${value.entryId}`),
     });
   });
 };
@@ -129,7 +129,7 @@ where
     const path = "/" + pathAlias.join("/");
 
     const value = {
-      entryId: args.createNodeId(`hon-${ent.entryid}`),
+      entryId: args.createNodeId(`pok-${ent.entryid}`),
       model: ent.model,
       path,
     };
@@ -137,11 +137,11 @@ where
     args.actions.createNode({
       internal: {
         contentDigest: args.createContentDigest(value),
-        type: "HonTaxonomy",
+        type: "PokTaxonomy",
         content: JSON.stringify(value),
       },
       ...value,
-      id: args.createNodeId(`hon-tax-${ent.id}`),
+      id: args.createNodeId(`pok-tax-${ent.id}`),
     });
   });
 };

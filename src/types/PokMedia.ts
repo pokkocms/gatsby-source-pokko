@@ -1,16 +1,13 @@
-import { CreateSchemaCustomizationArgs } from "gatsby";
+import { CreateSchemaCustomizationArgs, GatsbyGraphQLType } from "gatsby";
 import { createRemoteFileNode } from "gatsby-source-filesystem";
-import { getAsync, getDb } from "honegumi-sync";
 
-export const HonMedia = (
+export const PokMedia = (
   project: string,
-  environment: string,
+  _environment: string,
   args: CreateSchemaCustomizationArgs
-) => {
-  const db = getDb(project, environment);
-
-  return args.schema.buildObjectType({
-    name: "HonMedia",
+): GatsbyGraphQLType =>
+  args.schema.buildObjectType({
+    name: "PokMedia",
     extensions: { infer: false },
     fields: {
       id: "ID!",
@@ -43,4 +40,3 @@ export const HonMedia = (
       },
     },
   });
-};

@@ -2,12 +2,12 @@ import { CreatePagesArgs } from "gatsby";
 import { PluginOptions, TaxonomyNode } from "./types";
 
 type Query = {
-  allHonTaxonomy: { nodes: TaxonomyNode[] };
+  allPokTaxonomy: { nodes: TaxonomyNode[] };
 };
 
 const query = `
 {
-  allHonTaxonomy {
+  allPokTaxonomy {
     nodes {
       id
       taxonomyPath: path
@@ -29,16 +29,16 @@ export const createPages = async (
   const result = await graphql<Query>(query);
 
   if (result.errors) {
-    console.warn("[honegumi] createPages query failed", result.errors);
+    console.warn("[pokko] createPages query failed", result.errors);
   }
 
-  if (!result.data?.allHonTaxonomy.nodes) {
+  if (!result.data?.allPokTaxonomy.nodes) {
     return;
   }
 
   const matches = taxonomy.filter
-    ? result.data.allHonTaxonomy.nodes.filter(taxonomy.filter)
-    : result.data.allHonTaxonomy.nodes;
+    ? result.data.allPokTaxonomy.nodes.filter(taxonomy.filter)
+    : result.data.allPokTaxonomy.nodes;
 
   matches.forEach((node) => {
     try {
@@ -58,7 +58,7 @@ export const createPages = async (
       });
     } catch (ex) {
       console.warn(
-        `[honegumi] error creating page for path '${node.taxonomyPath}' of type '${node.model}'`
+        `[pokko] error creating page for path '${node.taxonomyPath}' of type '${node.model}'`
       );
       console.warn(ex);
     }

@@ -1,5 +1,5 @@
 import { CreateSchemaCustomizationArgs } from "gatsby";
-import { getDb, runSync, getAsync, allAsync } from "honegumi-sync";
+import { getDb, runSync, getAsync, allAsync } from "pokko-sync";
 import { listModels } from "./sync/schema";
 import { PluginOptions } from "./types";
 import { buildTypes } from "./types/index";
@@ -7,11 +7,11 @@ import { buildTypes } from "./types/index";
 const extractFieldType = (field: any) => {
   switch (field.type) {
     case "modules":
-      return "[HonModule]";
+      return "[PokModule]";
     case "media":
-      return "HonMedia";
+      return "PokMedia";
     case "link":
-      return "HonLink";
+      return "PokLink";
     case "text":
     default:
       return "String";
@@ -29,7 +29,7 @@ const extractField = (
       const db = getDb(project, environment);
 
       switch (fld.type) {
-        case "text": {
+        case "SCALAR": {
           const val = await getAsync(
             db,
             "select value_scalar from value_field where value_id = ? and model_field_id = ?",
@@ -38,7 +38,7 @@ const extractField = (
 
           return JSON.parse(val?.value_scalar || "{}")?.text;
         }
-        case "media": {
+        case "MEDIA": {
           const val = await getAsync(
             db,
             "select value_media_id as id from value_field where value_id = ? and model_field_id = ?",
@@ -47,7 +47,7 @@ const extractField = (
 
           return val;
         }
-        case "link": {
+        case "ENTRY": {
           const val = await getAsync(
             db,
             "select value_entry_id as id from value_field where value_id = ? and model_field_id = ?",
@@ -56,7 +56,7 @@ const extractField = (
 
           return val;
         }
-        case "modules": {
+        case "VALUE": {
           const val = await allAsync(
             db,
             `select
@@ -90,6 +90,16 @@ export const createSchemaCustomization = async (
 ) => {
   const { project, environment, token } = pluginOptions;
 
+  if (!project) {
+    throw new Error("[pokko] project not specified");
+  }
+  if (!environment) {
+    throw new Error("[pokko] environment not specified");
+  }
+  if (!token) {
+    throw new Error("[pokko] token not specified");
+  }
+
   await runSync(project, environment, token);
 
   const models = await listModels(getDb(project, environment));
@@ -99,9 +109,9 @@ export const createSchemaCustomization = async (
   models.forEach((mod) => {
     args.actions.createTypes([
       args.schema.buildObjectType({
-        name: `Hon${mod.alias}`,
+        name: `Pok${mod.alias}`,
         extensions: { infer: false },
-        interfaces: ["Node", "HonModule"],
+        interfaces: ["Node", "PokModule"],
         fields: {
           id: "ID!",
           ...mod.fields
