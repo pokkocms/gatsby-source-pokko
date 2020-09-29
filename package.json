@@ -1,6 +1,6 @@
 {
   "name": "gatsby-source-pokko",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "A minimal boilerplate for the essential files Gatsby looks for in a plugin",
   "main": "dist/gatsby-node.js",
   "scripts": {
