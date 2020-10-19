@@ -6,13 +6,13 @@ import { buildTypes } from "./types/index";
 
 const extractFieldType = (field: any) => {
   switch (field.type) {
-    case "modules":
+    case "VALUE":
       return "[PokModule]";
-    case "media":
+    case "MEDIA":
       return "PokMedia";
-    case "link":
+    case "ENTRY":
       return "PokLink";
-    case "text":
+    case "SCALAR":
     default:
       return "String";
   }

@@ -14,7 +14,7 @@ export const PokMedia = (
       url: {
         type: "String",
         resolve: async (source: any) => {
-          const url = `https://d2urwbt8hp3c27.cloudfront.net/${project}/${source.id}`;
+          const url = `https://cdn.pokko.io/${project}/${source.id}`;
 
           return url;
         },
@@ -22,7 +22,7 @@ export const PokMedia = (
       file: {
         type: "File",
         resolve: async (source: any) => {
-          const url = `https://d2urwbt8hp3c27.cloudfront.net/${project}/${source.id}`;
+          const url = `https://cdn.pokko.io/${project}/${source.id}`;
 
           const fileNode = await createRemoteFileNode({
             url,
