@@ -20,6 +20,7 @@ plugins: [
   {
     resolve: `gatsby-source-pokko`,
     options: {
+      region: `au-syd1`,
       token: `YOUR_API_TOKEN`,
       project: `YOUR_PROJECT_KEY`,
       environment: `YOUR_ENVIRONMENT_KEY`,
