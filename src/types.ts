@@ -6,6 +6,7 @@ export type TaxonomyNode = {
 };
 
 export type PluginOptions = {
+  region: string;
   token: string;
   project: string;
   environment: string;

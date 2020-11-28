@@ -1,5 +1,6 @@
 import { CreateSchemaCustomizationArgs } from "gatsby";
 import { getDb, runSync, getAsync, allAsync } from "pokko-sync";
+import { Region } from "pokko-sync/dist/api";
 import { listModels } from "./sync/schema";
 import { PluginOptions } from "./types";
 import { buildTypes } from "./types/index";
@@ -88,8 +89,11 @@ export const createSchemaCustomization = async (
   args: CreateSchemaCustomizationArgs,
   pluginOptions: PluginOptions
 ) => {
-  const { project, environment, token } = pluginOptions;
+  const { region, project, environment, token } = pluginOptions;
 
+  if (!region) {
+    throw new Error("[pokko] region not specified");
+  }
   if (!project) {
     throw new Error("[pokko] project not specified");
   }
@@ -100,7 +104,7 @@ export const createSchemaCustomization = async (
     throw new Error("[pokko] token not specified");
   }
 
-  await runSync(project, environment, token);
+  await runSync(region as Region, project, environment, token);
 
   const models = await listModels(getDb(project, environment));
 
