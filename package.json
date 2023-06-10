@@ -16,7 +16,7 @@
   "author": "Brendan McKenzie <brendan@pokko.io>",
   "license": "MIT",
   "dependencies": {
-    "gatsby": "^2.23.22",
+    "gatsby": "^4.25.7",
     "gatsby-source-filesystem": "^2.3.19",
     "pokko-sync": "0.0.4"
   },
@@ -25,7 +25,7 @@
     "typescript": "^3.9.6"
   },
   "peerDependencies": {
-    "gatsby": "^2.23.22",
+    "gatsby": "^4.25.7",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }
